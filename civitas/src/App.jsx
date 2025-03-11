@@ -1,19 +1,22 @@
-import React, { useState } from 'react';
-import Landing from './components/Landing';
-// import Home from './components/Home'; // Uncomment this when you create the Home component
-
+import React from "react";
+import Navbar from "./components/Navbar";
+import Landing from "./components/Landing";
+import Login from "./components/Login";
+import { Route, createBrowserRouter, createRoutesFromElements, RouterProvider, Router} from "react-router-dom";
+const router = createBrowserRouter (
+  createRoutesFromElements(
+  <>
+    <Route index element = {
+    <> 
+      <Navbar/> 
+      <Landing/> 
+    </>}/>
+    <Route path = "/login" index element = {
+    <Login/>}/>
+  </>)
+);
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  return (
-    <div className="min-h-screen">
-      {isLoggedIn ? (
-        // <Home /> // Uncomment this when you create the Home component
-        <div>Home Component Placeholder</div>
-      ) : (
-        <Landing />
-      )}
-    </div>
-  );
+  return <RouterProvider router={router}/>
 }
 
 export default App;
