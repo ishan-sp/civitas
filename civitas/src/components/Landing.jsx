@@ -1,6 +1,8 @@
+import Navbar from "./Navbar";
 function Landing() {
     return (
         <>
+        <Navbar links={[{ name: "About us", href: "/about-us" }, { name: "FAQs", href: "/faqs" }]} />
         <section className="bg-[#FCF8F1] bg-opacity-30 min-h-screen flex items-center">
         <div className="px-4 mx-auto w-full max-w-7xl sm:px-6 lg:px-8">
           <div className="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
