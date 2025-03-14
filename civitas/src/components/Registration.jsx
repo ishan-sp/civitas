@@ -1,20 +1,45 @@
 import React, { useState } from "react";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Plus, Trash } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit }) => {
+const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = true, isFirst=false }) => {
   const [formData, setFormData] = useState(
-    fields.reduce((acc, field) => ({ ...acc, [field.name]: "" }), {})
+    fields.reduce((acc, field) => {
+      if (field.type === "dynamic") {
+        acc[field.name] = [];
+      } else {
+        acc[field.name] = "";
+      }
+      return acc;
+    }, {})
   );
-  const [filePreview, setFilePreview] = useState(null); // For file preview
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
     if (e.target.type === "file") {
       setFormData({ ...formData, [name]: files[0] });
-      setFilePreview(URL.createObjectURL(files[0])); // Generate preview URL
     } else {
       setFormData({ ...formData, [name]: value });
     }
+  };
+
+  const handleDynamicAdd = (fieldName) => {
+    setFormData({
+      ...formData,
+      [fieldName]: [...formData[fieldName], ""],
+    });
+  };
+
+  const handleDynamicRemove = (fieldName, index) => {
+    const updatedList = [...formData[fieldName]];
+    updatedList.splice(index, 1);
+    setFormData({ ...formData, [fieldName]: updatedList });
+  };
+
+  const handleDynamicChange = (fieldName, index, value) => {
+    const updatedList = [...formData[fieldName]];
+    updatedList[index] = value;
+    setFormData({ ...formData, [fieldName]: updatedList });
   };
 
   const handleSubmit = async (e) => {
@@ -29,10 +54,10 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit }) => {
       <div className="container mx-auto flex flex-col items-center justify-center gap-12 mt-12">
         <div className="w-full max-w-4xl">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
-            <div className="text-center mb-8">
+             {isFirst && <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Register</h1>
               <p className="text-gray-600">Fill in the details to create your account</p>
-            </div>
+            </div>}
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Render Fields */}
@@ -42,26 +67,34 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit }) => {
                     {field.label}
                   </label>
                   <div className="relative">
-                    {field.type === "file" ? (
+                    {field.type === "dynamic" ? (
                       <>
-                        <input
-                          type="file"
-                          name={field.name}
-                          onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                          required={field.required}
-                        />
-                        {filePreview && (
-                          <div className="mt-2">
+                        {formData[field.name].map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2 mb-2">
+                            <input
+                              type="text"
+                              value={item}
+                              onChange={(e) => handleDynamicChange(field.name, idx, e.target.value)}
+                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                              placeholder={field.placeholder}
+                            />
                             <button
                               type="button"
-                              onClick={() => window.open(filePreview, "_blank")}
-                              className="text-blue-500 underline"
+                              onClick={() => handleDynamicRemove(field.name, idx)}
+                              className="text-red-500 hover:text-red-700"
                             >
-                              View Uploaded File
+                              <Trash className="h-5 w-5" />
                             </button>
                           </div>
-                        )}
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => handleDynamicAdd(field.name)}
+                          className="mt-2 text-blue-500 hover:text-blue-700 flex items-center gap-1"
+                        >
+                          <Plus className="h-5 w-5" />
+                          Add {field.label}
+                        </button>
                       </>
                     ) : (
                       <input
@@ -103,23 +136,23 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit }) => {
                 </div>
               ))}
 
-<div className="col-span-1 md:col-span-2 flex flex-col gap-4 mt-6 items-center">
-  <button
-    type="submit"
-    className="bg-yellow-300 text-black py-3 px-6 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center space-x-2 font-medium w-1/2"
-  >
-    <span>Register</span>
-    <ArrowRight className="h-5 w-5" />
-  </button>
-  <button
-    type="button"
-    onClick={() => window.location.href = "/login"}  // Redirect to /login
-    className="bg-gray-200 text-black py-3 px-6 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center space-x-2 font-medium w-1/2"
-  >
-    <span>Back</span>
-  </button>
-</div>
-
+              {/* Conditional Buttons */}
+{!isNotEnd && (
+  <div className="col-span-1 md:col-span-2 flex flex-col items-center gap-4 mt-6">
+    <Link
+      to="/login"
+      className="bg-gray-300 text-black py-3 px-6 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all font-medium w-1/2 text-center"
+    >
+      Back
+    </Link>
+    <button
+      type="submit"
+      className="bg-yellow-300 text-black py-3 px-6 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-medium w-1/2"
+    >
+      Submit
+    </button>
+  </div>
+)}
             </form>
           </div>
         </div>

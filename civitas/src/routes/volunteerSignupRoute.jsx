@@ -177,6 +177,8 @@ const VolunteerRegistration = () => {
     <div>
       <RegistrationForm
         fields={fields}
+        isNotEnd={false}
+        isFirst={true}
         dropdowns={dropdowns}
         onSubmit={(formData) => {
           handleSubmit(formData);
