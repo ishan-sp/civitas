@@ -5,6 +5,7 @@ import Login from "./components/Login"; // Restore the Login route
 import StudentRegistration from "./routes/studentSignupRoute";
 import Navbar from "./components/Navbar";
 import VolunteerRegistration from "./routes/volunteerSignupRoute";
+import NgoRegistration from "./routes/ngoSignupRoute";
 
 const App = () => {
   return (
@@ -22,12 +23,28 @@ const App = () => {
         {/* Student Registration Route */}
         <Route path="/signup/student" element={<><Navbar links={[
   { name: "About us", href: "/about" },
-  { name: "FAQ", href: "/faq" },
+  { name: "FAQs", href: "/faq" },
 ]}/><StudentRegistration /></>} />
         <Route path="/signup/volunteer" element={<><Navbar links={[
   { name: "About us", href: "/about" },
-  { name: "FAQ", href: "/faq" },
+  { name: "FAQs", href: "/faq" },
 ]}/><VolunteerRegistration /></>} />
+
+{/* NGO Registration Route */}
+<Route
+          path="/signup/ngo"
+          element={
+            <>
+              <Navbar
+                links={[
+                  { name: "About us", href: "/about" },
+                  { name: "FAQs", href: "/faq" },
+                ]}
+              />
+              <NgoRegistration />
+            </>
+          }
+        />
       </Routes>
     </Router>
   );
