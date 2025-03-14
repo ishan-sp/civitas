@@ -8,7 +8,6 @@ const router = createBrowserRouter (
   <>
     <Route index element = {
     <> 
-      <Navbar/> 
       <Landing/> 
     </>}/>
     <Route path = "/login" index element = {
