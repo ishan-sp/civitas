@@ -9,10 +9,30 @@ export const Login = () => {
     name: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to log in');
+    }
+
+    const data = await response.json();
+    console.log('Login successful:', data);
+    // Handle successful login (e.g., redirect to another page, save token, etc.)
+  } catch (error) {
+    console.error('Error during login:', error);
+    // Handle error (e.g., show error message to the user)
+  }
+};
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
