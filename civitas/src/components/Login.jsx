@@ -101,7 +101,7 @@ export const Login = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center space-x-2 font-medium"
+                  className="w-full bg-yellow-300 text-black py-3 px-4 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center space-x-2 font-medium"
                 >
                   <span>{isLogin ? "Sign in" : "Create account"}</span>
                   <ArrowRight className="h-5 w-5" />
