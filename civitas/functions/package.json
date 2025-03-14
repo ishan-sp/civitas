@@ -2,10 +2,11 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
+    "build": "echo 'No build step needed'",
+    "deploy": "firebase deploy",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {
