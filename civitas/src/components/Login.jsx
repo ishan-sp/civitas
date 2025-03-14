@@ -113,7 +113,7 @@ export const Login = () => {
                     type="submit"
                     className="w-full bg-yellow-300 text-black py-3 px-4 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center space-x-2 font-medium"
                   >
-                    <span>Sign in</span>
+                    <span>Log in</span>
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </form>
@@ -127,13 +127,13 @@ export const Login = () => {
                     Enter as a Student →
                   </button>
                   <button
-                    onClick={() => handleNavigation("/volunteer")}
+                    onClick={() => handleNavigation("/signup/volunteer")}
                     className="w-full bg-yellow-300 text-black py-3 px-4 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center space-x-2 font-medium"
                   >
                     Enter as a Volunteer →
                   </button>
                   <button
-                    onClick={() => handleNavigation("/ngo")}
+                    onClick={() => handleNavigation("/signup/ngo")}
                     className="w-full bg-yellow-300 text-black py-3 px-4 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all flex items-center justify-center space-x-2 font-medium"
                   >
                     Enter as an NGO →
@@ -148,7 +148,7 @@ export const Login = () => {
                 >
                   {isLogin
                     ? "Don't have an account? Choose your role"
-                    : "Already have an account? Sign in"}
+                    : "Already have an account? Log in"}
                 </button>
               </div>
             </div>
