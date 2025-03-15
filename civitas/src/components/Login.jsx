@@ -150,6 +150,14 @@ export const Login = () => {
                     ? "Don't have an account? Choose your role"
                     : "Already have an account? Log in"}
                 </button>
+
+                {/* Button to directly navigate to NGO Dashboard */}
+                <button
+                  onClick={() => navigate("/dashboard/ngo")}
+                  className="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Go to NGO Dashboard
+                </button>
               </div>
             </div>
           </div>

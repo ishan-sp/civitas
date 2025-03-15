@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Mail, Lock, User, ArrowRight, Plus, Trash } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Plus, Trash } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
-const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = true, isFirst=false, isngo=false }) => {
+const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = true, isFirst = false, isngo = false }) => {
   const [formData, setFormData] = useState(
     fields.reduce((acc, field) => {
       if (field.type === "dynamic") {
@@ -14,9 +14,13 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
     }, {})
   );
 
+  const navigate = useNavigate();
+
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
+
     if (e.target.type === "file") {
+      // Store the file object in the state
       setFormData({ ...formData, [name]: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -44,13 +48,39 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      await onSubmit(formData);
+
+    if (isngo) {
+      try {
+        const response = await fetch("/signup/ngo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("NGO registration successful:", data);
+        } else {
+          console.error("Failed to register NGO");
+        }
+      } catch (error) {
+        console.error("Error during NGO registration:", error);
+      } finally {
+        navigate("/dashboard/ngo");
+      }
+    } else if (fields.some((field) => field.name === "volunteer")) {
+      // Placeholder for handling volunteer registration
+      console.log("Handle volunteer registration here");
+    } else if (fields.some((field) => field.name === "student")) {
+      // Placeholder for handling student registration
+      console.log("Handle student registration here");
     }
   };
 
-  const containerClasses = isngo 
-    ? "bg-[#FCF8F1] flex items-start justify-center " 
+  const containerClasses = isngo
+    ? "bg-[#FCF8F1] flex items-start justify-center"
     : "min-h-screen bg-[#FCF8F1] flex items-start justify-center p-4";
 
   const innerContainerClasses = isngo
@@ -62,10 +92,12 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
       <div className={innerContainerClasses}>
         <div className="w-full max-w-4xl">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
-             {isFirst && <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Register</h1>
-              <p className="text-gray-600">Fill in the details to create your account</p>
-            </div>}
+            {isFirst && (
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Register</h1>
+                <p className="text-gray-600">Fill in the details to create your account</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Render Fields */}
@@ -103,6 +135,29 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
                           <Plus className="h-5 w-5" />
                           Add {field.label}
                         </button>
+                      </>
+                    ) : field.type === "file" ? (
+                      <>
+                        <input
+                          type="file"
+                          name={field.name}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                        />
+                        {/* File Preview */}
+                        {formData[field.name] && (
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-600">Uploaded File: {formData[field.name].name}</p>
+                            <a
+                              href={URL.createObjectURL(formData[field.name])}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 hover:underline"
+                            >
+                              View File
+                            </a>
+                          </div>
+                        )}
                       </>
                     ) : (
                       <input
