@@ -193,6 +193,7 @@ const NGORegistration = () => {
         fields={basicInfoFields}
         isNotEnd={true}
         isFirst={true}
+        isngo={true}
         onSubmit={(formData) => {
           handleSubmit(formData);
         }}
@@ -203,6 +204,7 @@ const NGORegistration = () => {
         fields={missionAndProgramsFields}
         dropdowns={missionAndProgramsDropdowns}
         isNotEnd={true}
+        isngo={true}
         onSubmit={(formData) => {
           handleSubmit(formData);
         }}
@@ -212,6 +214,7 @@ const NGORegistration = () => {
       <RegistrationForm
         fields={contactInfoFields}
         isNotEnd={true}
+        isngo={true}
         onSubmit={(formData) => {
           handleSubmit(formData);
         }}
@@ -221,6 +224,7 @@ const NGORegistration = () => {
       <RegistrationForm
         fields={documentationAndImpactFields}
         isNotEnd={false} // Render Submit and Back buttons
+        isngo={true}
         onSubmit={(formData) => {
           handleSubmit(formData);
         }}
