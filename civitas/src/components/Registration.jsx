@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Mail, Lock, User, ArrowRight, Plus, Trash } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = true, isFirst=false }) => {
+const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = true, isFirst=false, isngo=false }) => {
   const [formData, setFormData] = useState(
     fields.reduce((acc, field) => {
       if (field.type === "dynamic") {
@@ -49,9 +49,17 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
     }
   };
 
+  const containerClasses = isngo 
+    ? "bg-[#FCF8F1] flex items-start justify-center " 
+    : "min-h-screen bg-[#FCF8F1] flex items-start justify-center p-4";
+
+  const innerContainerClasses = isngo
+    ? "container mx-auto flex flex-col items-center justify-center gap-6 mt-4"
+    : "container mx-auto flex flex-col items-center justify-center gap-12 mt-12";
+
   return (
-    <div className="min-h-screen bg-[#FCF8F1] flex items-start justify-center p-4">
-      <div className="container mx-auto flex flex-col items-center justify-center gap-12 mt-12">
+    <div className={containerClasses}>
+      <div className={innerContainerClasses}>
         <div className="w-full max-w-4xl">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
              {isFirst && <div className="text-center mb-8">
@@ -137,22 +145,22 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
               ))}
 
               {/* Conditional Buttons */}
-{!isNotEnd && (
-  <div className="col-span-1 md:col-span-2 flex flex-col items-center gap-4 mt-6">
-    <Link
-      to="/login"
-      className="bg-gray-300 text-black py-3 px-6 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all font-medium w-1/2 text-center"
-    >
-      Back
-    </Link>
-    <button
-      type="submit"
-      className="bg-yellow-300 text-black py-3 px-6 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-medium w-1/2"
-    >
-      Submit
-    </button>
-  </div>
-)}
+              {!isNotEnd && (
+                <div className="col-span-1 md:col-span-2 flex flex-col items-center gap-4 mt-6">
+                  <Link
+                    to="/login"
+                    className="bg-gray-300 text-black py-3 px-6 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all font-medium w-1/2 text-center"
+                  >
+                    Back
+                  </Link>
+                  <button
+                    type="submit"
+                    className="bg-yellow-300 text-black py-3 px-6 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-medium w-1/2"
+                  >
+                    Submit
+                  </button>
+                </div>
+              )}
             </form>
           </div>
         </div>
