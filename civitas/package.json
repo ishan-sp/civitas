@@ -19,6 +19,8 @@
     "react-datepicker": "^8.2.1",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.3.0",
+    "react-router-hash-link": "^2.4.3",
+    "react-scroll": "^1.9.3",
     "react-time-picker": "^7.0.0",
     "usestate": "^1.1.3"
   },
