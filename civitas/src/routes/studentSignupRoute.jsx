@@ -74,7 +74,7 @@ const StudentRegistration = () => {
     }
   };
 
-  return <RegistrationForm fields={fields} isNotEnd={false} isFirst = {true} dropdowns={dropdowns} onSubmit={handleSubmit} />;
+  return <RegistrationForm isStudent={true} fields={fields} isNotEnd={false} isFirst = {true} dropdowns={dropdowns} onSubmit={handleSubmit} />;
 };
 
 export default StudentRegistration;
