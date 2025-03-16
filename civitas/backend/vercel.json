@@ -1,0 +1,15 @@
+{
+    "builds": [
+      {
+        "src": "civitas/backend/server.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "civitas/backend/server.py"
+      }
+    ]
+  }
+  
