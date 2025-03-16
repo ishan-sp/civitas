@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Plus, Trash } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = true, isFirst = false, isngo = false }) => {
+const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = true, isVol = false, isStudent = false, isFirst = false, isngo = false }) => {
   const [formData, setFormData] = useState(
     fields.reduce((acc, field) => {
       if (field.type === "dynamic") {
@@ -48,17 +48,17 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (isngo) {
       try {
-        const response = await fetch("/signup/ngo", {
+        const response = await fetch("/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({ ...formData, type: "NGO" }), // Add "type": "NGO"
         });
-
+  
         if (response.ok) {
           const data = await response.json();
           console.log("NGO registration successful:", data);
@@ -67,18 +67,48 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
         }
       } catch (error) {
         console.error("Error during NGO registration:", error);
-      } finally {
-        navigate("/dashboard/ngo");
       }
-    } else if (fields.some((field) => field.name === "volunteer")) {
-      // Placeholder for handling volunteer registration
-      console.log("Handle volunteer registration here");
-    } else if (fields.some((field) => field.name === "student")) {
-      // Placeholder for handling student registration
-      console.log("Handle student registration here");
+    } else if (isVol) {
+      try {
+        const response = await fetch("/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...formData, type: "Volunteer" }), // Add "type": "Volunteer"
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Volunteer registration successful:", data);
+        } else {
+          console.error("Failed to register Volunteer");
+        }
+      } catch (error) {
+        console.error("Error during Volunteer registration:", error);
+      }
+    } else if (isStudent) {
+      try {
+        const response = await fetch("/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...formData, type: "Student" }), // Add "type": "Student"
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Student registration successful:", data);
+        } else {
+          console.error("Failed to register Student");
+        }
+      } catch (error) {
+        console.error("Error during Student registration:", error);
+      }
     }
   };
-
+  
   const containerClasses = isngo
     ? "bg-[#FCF8F1] flex items-start justify-center"
     : "min-h-screen bg-[#FCF8F1] flex items-start justify-center p-4";

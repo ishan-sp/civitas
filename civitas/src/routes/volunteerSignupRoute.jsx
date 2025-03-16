@@ -179,6 +179,7 @@ const VolunteerRegistration = () => {
         fields={fields}
         isNotEnd={false}
         isFirst={true}
+        isVol={true}
         dropdowns={dropdowns}
         onSubmit={(formData) => {
           handleSubmit(formData);

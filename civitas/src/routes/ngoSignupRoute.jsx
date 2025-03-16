@@ -107,8 +107,8 @@ const NGORegistration = () => {
   const contactInfoFields = [
     { name: "primaryContact", label: "Primary Contact Person", type: "text", placeholder: "Enter Name", required: true },
     { name: "contactRole", label: "Position/Role of Contact Person", type: "text", placeholder: "Enter Role", required: true },
-    { name: "email", label: "Email Address", type: "email", placeholder: "Enter Email", required: true },
-    { name: "phone", label: "Phone Number", type: "tel", placeholder: "Enter Phone Number", required: true },
+    { name: "email", label: "Organisation Email Address", type: "email", placeholder: "Enter Email", required: true },
+    { name: "phone", label: "Organisation Phone Number", type: "tel", placeholder: "Enter Phone Number", required: true },
     {
       name: "address",
       label: "Registered Address",
