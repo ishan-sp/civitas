@@ -1,0 +1,2 @@
+echo "3.10" > .python-version
+
