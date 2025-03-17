@@ -51,7 +51,7 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
   
     if (isngo) {
       try {
-        const response = await fetch("/signup", {
+        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -70,7 +70,7 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
       }
     } else if (isVol) {
       try {
-        const response = await fetch("/signup", {
+        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -89,19 +89,21 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
       }
     } else if (isStudent) {
       try {
-        const response = await fetch("/signup", {
+        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ ...formData, type: "Student" }), // Add "type": "Student"
         });
+
+        const data = await response.json();
   
         if (response.ok) {
-          const data = await response.json();
-          console.log("Student registration successful:", data);
+          
+          alert("Student registration successful:", data);
         } else {
-          console.error("Failed to register Student");
+          alert (`${data.detail}`)
         }
       } catch (error) {
         console.error("Error during Student registration:", error);

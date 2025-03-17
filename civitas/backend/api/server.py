@@ -1,10 +1,17 @@
+import os
+import json
 import firebase_admin
 from firebase_admin import auth, credentials
 from fastapi import FastAPI, HTTPException, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-cred = credentials.Certificate("civitas/backend/firebase_credentials.json")
+firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
+
+if not firebase_credentials:
+    raise ValueError("FIREBASE_CREDENTIALS environment variable is missing!")
+
+cred = credentials.Certificate(json.loads(firebase_credentials))
 firebase_admin.initialize_app(cred)
 
 app = FastAPI()

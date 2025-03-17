@@ -8,7 +8,7 @@ const StudentRegistration = () => {
   useEffect(() => {
     const fetchSchools = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/schools");
+        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/api/schools");
         if (!response.ok) {
           throw new Error("Failed to fetch schools");
         }
@@ -40,7 +40,7 @@ const StudentRegistration = () => {
       options: loading
         ? []
         : schools.length > 0
-        ? schools.map((school) => ({ value: school.id, label: school.name }))
+        ? schools.map((school) => ({ value: school.schoolId, label: school.schoolName }))
         : [{ value: "", label: "No schools found. Try again later" }],
       required: true,
     },
@@ -55,7 +55,7 @@ const StudentRegistration = () => {
 
   const handleSubmit = async (formData) => {
     try {
-      const response = await fetch("http://localhost:3000/register/student", {
+      const response = await fetch("http://localhost:3000/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
