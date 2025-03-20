@@ -8,7 +8,7 @@ const StudentRegistration = () => {
   useEffect(() => {
     const fetchSchools = async () => {
       try {
-        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/api/schools");
+        const response = await fetch("https://civitas-iota.vercel.app/api/schools");
         if (!response.ok) {
           throw new Error("Failed to fetch schools");
         }
@@ -55,7 +55,7 @@ const StudentRegistration = () => {
 
   const handleSubmit = async (formData) => {
     try {
-      const response = await fetch("http://localhost:3000/signup", {
+      const response = await fetch("https://civitas-iota.vercel.app/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
