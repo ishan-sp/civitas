@@ -51,7 +51,7 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
   
     if (isngo) {
       try {
-        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/signup", {
+        const response = await fetch("https://civitas-iota.vercel.app/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
