@@ -1,8 +1,8 @@
 import os
 import json
 import firebase_admin
-from firebase_admin import auth, credentials
-from fastapi import FastAPI, HTTPException, Header, Request
+from firebase_admin import auth, credentials, firestore
+from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -23,6 +23,8 @@ app.add_middleware(
     allow_methods=["*"],  
     allow_headers=["*"],  
 )
+
+db = firestore.client()
 
 @app.get ("/api/schools")
 def schools():
@@ -49,12 +51,23 @@ async def signup_user (request : Request):
             raise HTTPException(status_code=400, detail="Password must be atleast 6 characters long")
     except auth.UserNotFoundError:
         try :
-            auth.create_user(
+            new_user = auth.create_user(
                 email=user_data["email"],
                 password=user_data["password"]
             )
         except Exception as e:
             raise HTTPException (status_code=400 , detail= str(e))
+    cursor_connect = db.collection("Student").document(new_user.uid)
+    if cursor_connect.get().exists:
+        raise HTTPException(status_code=400, detail="User already exists")
+    profile = {}
+    for key in user_data.keys():
+        if key != 'password':
+            profile [key] = user_data [key]
+    cursor_connect.set(profile)
+
+
+
 
 def main():
     import uvicorn
