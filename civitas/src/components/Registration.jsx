@@ -77,12 +77,14 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
         textData.resume = fileUrls[0];
       }
 
+
+
       else if (userType == "NGO"){
         textData.RegistrationCertificate = fileUrls[0];
         textData.AddressProof = fileUrls[1];
-        textData.TaxExemptionCertificate = fileUrls[2];
-        textData.PANDetails = fileUrls[3];
-        textData.AuditReportorFinancialStatement = fileUrls[4];
+        textData.TaxExemptionCertificate = fileUrls.length > 2 ? fileUrls[2] : null;
+        textData.PANDetails = fileUrls.length > 2 ? fileUrls[3] : null;
+        textData.AuditReportorFinancialStatement = fileUrls.length > 2 ? fileUrls[4] : null;
       }
 
 

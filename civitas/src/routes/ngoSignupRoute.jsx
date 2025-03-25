@@ -108,6 +108,7 @@ const NGORegistration = () => {
     { name: "primaryContact", label: "Primary Contact Person", type: "text", placeholder: "Enter Name", required: true },
     { name: "contactRole", label: "Position/Role of Contact Person", type: "text", placeholder: "Enter Role", required: true },
     { name: "email", label: "Organisation Email Address", type: "email", placeholder: "Enter Email", required: true },
+    { name: "password", label: "Password", type: "password", placeholder: "••••••••", icon: "lock", required: true },
     { name: "phone", label: "Organisation Phone Number", type: "tel", placeholder: "Enter Phone Number", required: true },
     {
       name: "address",
