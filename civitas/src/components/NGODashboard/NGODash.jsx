@@ -12,7 +12,7 @@ const NGODash = () => {
       <VerticalNavbar
         links={[
           { name: "Discover", href: "#", onClick: () => setActiveSection("discover") },
-          { name: "Settings", href: "#", onClick: () => setActiveSection("settings") },
+          { name: "Settings", href: "/ngo/settings", onClick: () => setActiveSection("settings") },
         ]}
       />
 

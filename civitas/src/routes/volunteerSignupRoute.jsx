@@ -49,6 +49,9 @@ const VolunteerRegistration = () => {
 
   const fields = [
     { name: "fullName", label: "Full Name", type: "text", placeholder: "John Doe", icon: "user", required: true },
+    { name: "email", label: "Email", type: "email", placeholder: "example@mail.com", icon: "mail", required: true },
+    { name: "password", label: "Password", type: "password", placeholder: "••••••••", icon: "lock", required: true },
+    { name: "phone", label: "Phone Number", type: "tel", placeholder: "123-456-7890", icon: "user", required: true },
     { name: "age", label: "Age", type: "number", placeholder: "Enter your age", icon: null, required: true },
     { name: "usn", label: "USN (if RVCE student)", type: "text", placeholder: "Enter your USN", icon: null, required: false },
     {
