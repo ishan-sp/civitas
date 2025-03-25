@@ -49,67 +49,66 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    if (isngo) {
-      try {
-        const response = await fetch("https://civitas-iota.vercel.app/signup", {
+    try {
+      const fileFields = Object.keys(formData).filter((key) => formData[key] instanceof File);
+      const textData = { ...formData };
+      fileFields.forEach((key) => delete textData[key]);
+  
+      let fileUrls = [];
+      if (fileFields.length > 0) {
+        const formDataForFiles = new FormData();
+        fileFields.forEach((key) => formDataForFiles.append("files", formData[key]));
+  
+        const uploadResponse = await fetch("https://civitas-iota.vercel.app/upload-files", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...formData, type: "NGO" }), // Add "type": "NGO"
+          body: formDataForFiles,
         });
   
-        if (response.ok) {
-          const data = await response.json();
-          console.log("NGO registration successful:", data);
-        } else {
-          console.error("Failed to register NGO");
-        }
-      } catch (error) {
-        console.error("Error during NGO registration:", error);
+        if (!uploadResponse.ok) throw new Error("File upload failed");
+        
+        const uploadData = await uploadResponse.json();
+        fileUrls = uploadData.file_urls;
       }
-    } else if (isVol) {
-      try {
-        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...formData, type: "Volunteer" }), // Add "type": "Volunteer"
-        });
   
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Volunteer registration successful:", data);
-        } else {
-          console.error("Failed to register Volunteer");
-        }
-      } catch (error) {
-        console.error("Error during Volunteer registration:", error);
-      }
-    } else if (isStudent) {
-      try {
-        const response = await fetch("https://civitas-gulabjam1-gulabjam1s-projects.vercel.app/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ ...formData, type: "Student" }), // Add "type": "Student"
-        });
+  
+      const userType = isngo ? "NGO" : isVol ? "Volunteer" : isStudent ? "Student" : null;
 
-        const data = await response.json();
-  
-        if (response.ok) {
-          
-          alert("Student registration successful:", data);
-        } else {
-          alert (`${data.detail}`)
-        }
-      } catch (error) {
-        console.error("Error during Student registration:", error);
+      if (userType == "Volunteer"){
+        textData.resume = fileUrls[0];
       }
+
+      else if (userType == "NGO"){
+        textData.RegistrationCertificate = fileUrls[0];
+        textData.AddressProof = fileUrls[1];
+        textData.TaxExemptionCertificate = fileUrls[2];
+        textData.PANDetails = fileUrls[3];
+        textData.AuditReportorFinancialStatement = fileUrls[4];
+      }
+
+
+
+      if (!userType) throw new Error("User type not specified");
+  
+      const response = await fetch("https://civitas-iota.vercel.app/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...textData, type: userType }),
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        alert(`${userType} registration successful!`);
+      } else {
+        alert(data.detail || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
     }
   };
+  
   
   const containerClasses = isngo
     ? "bg-[#FCF8F1] flex items-start justify-center"

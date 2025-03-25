@@ -1,8 +1,13 @@
 import os
 import json
 import firebase_admin
-from firebase_admin import auth, credentials, firestore
+from firebase_admin import auth, credentials, firestore, storage
+import uuid
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File
+from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -12,9 +17,17 @@ if not firebase_credentials:
     raise ValueError("FIREBASE_CREDENTIALS environment variable is missing!")
 
 cred = credentials.Certificate(json.loads(firebase_credentials))
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred, {
+    "storageBucket": "civitas-dd1d6.firebasestorage.app" 
+})
 
 app = FastAPI()
+
+class LargeRequestMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        request.state.body = await request.body()
+        response = await call_next(request)
+        return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,8 +36,11 @@ app.add_middleware(
     allow_methods=["*"],  
     allow_headers=["*"],  
 )
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
+app.add_middleware(LargeRequestMiddleware)
 
 db = firestore.client()
+bucket = storage.bucket()
 
 @app.get ("/api/schools")
 def schools():
@@ -57,14 +73,48 @@ async def signup_user (request : Request):
             )
         except Exception as e:
             raise HTTPException (status_code=400 , detail= str(e))
-    cursor_connect = db.collection("Student").document(new_user.uid)
-    if cursor_connect.get().exists:
-        raise HTTPException(status_code=400, detail="User already exists")
-    profile = {}
-    for key in user_data.keys():
-        if key != 'password':
-            profile [key] = user_data [key]
-    cursor_connect.set(profile)
+    if (user_data["type"] == "Student"):
+        cursor_connect = db.collection("Student").document(new_user.uid)
+        if cursor_connect.get().exists:
+            raise HTTPException(status_code=400, detail="User already exists")
+        profile = {}
+        for key in user_data.keys():
+            if key != 'password':
+                profile [key] = user_data [key]
+        cursor_connect.set(profile)
+    elif (user_data["type"] == "Volunteer"):
+        cursor_connect = db.collection("Volunteer").document(new_user.uid)
+        if cursor_connect.get().exists:
+            raise HTTPException(status_code=400, detail="User already exists")
+        profile = {}
+        for key in user_data.keys():
+            if key != 'password':
+                profile [key] = user_data [key]
+        cursor_connect.set(profile)
+    elif (user_data["type"] == "NGO"):
+        cursor_connect = db.collection("NGO").document(new_user.uid)
+        if cursor_connect.get().exists:
+            raise HTTPException(status_code=400, detail="User already exists")
+        profile = {}
+        for key in user_data.keys():
+            if key != 'password':
+                profile [key] = user_data [key]
+        cursor_connect.set(profile)
+
+@app.post("/upload-files")
+async def upload_files(files: List[UploadFile] = File(...)):
+    file_urls = []
+
+    for file in files:
+        file_extension = file.filename.split(".")[-1]
+        file_name = f"uploads/{uuid.uuid4()}.{file_extension}" 
+        blob = bucket.blob(file_name)
+        blob.upload_from_string(await file.read(), content_type=file.content_type)
+        blob.make_public()
+        file_urls.append(blob.public_url)
+
+    return {"file_urls": file_urls}
+
 
 
 
