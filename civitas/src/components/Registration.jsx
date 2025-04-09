@@ -59,7 +59,7 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
         const formDataForFiles = new FormData();
         fileFields.forEach((key) => formDataForFiles.append("files", formData[key]));
   
-        const uploadResponse = await fetch("https://civitas-iota.vercel.app/upload-files", {
+        const uploadResponse = await fetch("http://localhost:3000/upload-files", { // Updated URL
           method: "POST",
           body: formDataForFiles,
         });
@@ -91,7 +91,7 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
 
       if (!userType) throw new Error("User type not specified");
   
-      const response = await fetch("https://civitas-iota.vercel.app/signup", {
+      const response = await fetch("http://localhost:3000/signup", { // Updated URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",

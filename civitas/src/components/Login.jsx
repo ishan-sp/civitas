@@ -158,6 +158,13 @@ export const Login = () => {
                 >
                   Go to NGO Dashboard
                 </button>
+                <br />
+                <button
+                  onClick={() => navigate("/dashboard/vol")}
+                  className="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Go to Volunteer Dashboard
+                </button>
               </div>
             </div>
           </div>
