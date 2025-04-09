@@ -8,6 +8,7 @@ import NgoRegistration from "./routes/ngoSignupRoute";
 import Navbar from "./components/Navbar";
 import NGODash from "./components/NGODashboard/NGODash";
 import SettingsSection from "./components/NGODashboard/Settings";
+import VOLDash from "./components/VolunteerDashboard/VOLDash";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/signup/volunteer" element={<><Navbar links={[{ name: "About us", href: "/about" }, { name: "FAQs", href: "/faq" }]} /><VolunteerRegistration /></>} />
         <Route path="/signup/ngo" element={<><Navbar links={[{ name: "About us", href: "/about" }, { name: "FAQs", href: "/faq" }]} /><NgoRegistration /></>} />
         <Route path="/dashboard/ngo/*" element={<NGODash />} />
+        <Route path="/dashboard/vol/*" element={<VOLDash />} />
         <Route path="/ngo/settings" element = {<><SettingsSection/></>}/>
       </Routes>
     </Router>
