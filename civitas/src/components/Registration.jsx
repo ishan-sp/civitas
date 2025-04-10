@@ -31,7 +31,7 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
         .find((dropdown) => dropdown.name === name)
         ?.options.find((option) => option.value === value);
   
-      setFormData({ ...formData, [name]: selectedOption?.label || value });
+      setFormData({ ...formData, [name]: selectedOption?.value || label });
     } else {
       setFormData({ ...formData, [name]: value });
     }
