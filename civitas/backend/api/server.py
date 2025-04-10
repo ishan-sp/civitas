@@ -10,6 +10,9 @@ from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
 
