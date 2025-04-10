@@ -48,22 +48,22 @@ const NGORegistration = () => {
       placeholder: "Enter a region",
       required: true,
     },
-    { name: "website", label: "NGO Website Link", type: "url", placeholder: "Enter Website URL", required: false },
-    { name: "instagram", label: "NGO Instagram Link", type: "url", placeholder: "Enter Instagram URL", required: false },
-    { name: "facebook", label: "NGO Facebook Link", type: "url", placeholder: "Enter Facebook URL", required: false },
-    { name: "youtube", label: "NGO YouTube Link", type: "url", placeholder: "Enter YouTube URL", required: false },
-    { name: "linkedin", label: "NGO LinkedIn Link", type: "url", placeholder: "Enter LinkedIn URL", required: false },
+    { name: "website", label: "NGO Website Link (optional)", type: "url", placeholder: "Enter Website URL", required: false },
+    { name: "instagram", label: "NGO Instagram Link (optional)", type: "url", placeholder: "Enter Instagram URL", required: false },
+    { name: "facebook", label: "NGO Facebook Link (optional)", type: "url", placeholder: "Enter Facebook URL", required: false },
+    { name: "youtube", label: "NGO YouTube Link (optional)", type: "url", placeholder: "Enter YouTube URL", required: false },
+    { name: "linkedin", label: "NGO LinkedIn Link (optional)", type: "url", placeholder: "Enter LinkedIn URL", required: false },
 
     // Mission and Programs
-    { name: "missionStatement", label: "Mission Statement", type: "textarea", placeholder: "Enter Mission Statement", required: true },
-    { name: "programDetails", label: "Program Details", type: "textarea", placeholder: "Describe your programs", required: true },
+    { name: "missionStatement", label: "Mission Statement*", type: "textarea", placeholder: "Enter Mission Statement", required: true },
+    { name: "programDetails", label: "Program Details*", type: "textarea", placeholder: "Describe your programs", required: true },
 
     // Contact Information
-    { name: "primaryContact", label: "Primary Contact Person", type: "text", placeholder: "Enter Name", required: true },
-    { name: "contactRole", label: "Position/Role of Contact Person", type: "text", placeholder: "Enter Role", required: true },
-    { name: "email", label: "Organisation Email Address", type: "email", placeholder: "Enter Email", required: true },
-    { name: "password", label: "Password", type: "password", placeholder: "••••••••", required: true },
-    { name: "phone", label: "Organisation Phone Number", type: "tel", placeholder: "Enter Phone Number", required: true },
+    { name: "primaryContact", label: "Primary Contact Person*", type: "text", placeholder: "Enter Name", required: true },
+    { name: "contactRole", label: "Position/Role of Contact Person*", type: "text", placeholder: "Enter Role", required: true },
+    { name: "email", label: "Organisation Email Address (used for authentication)*", type: "email", placeholder: "Enter Email", required: true },
+    { name: "password", label: "Password (used for authentication)*", type: "password", placeholder: "••••••••", required: true },
+    { name: "phone", label: "Organisation Phone Number*", type: "tel", placeholder: "Enter Phone Number", required: true },
     {
       name: "address",
       label: "Registered Address",
@@ -79,14 +79,14 @@ const NGORegistration = () => {
     // Documentation and Impact
     {
       name: "registrationCertificate",
-      label: "NGO Registration Certificate",
+      label: "NGO Registration Certificate*",
       type: "file",
       placeholder: "Upload Registration Certificate",
       required: true,
     },
     {
       name: "proofOfAddress",
-      label: "Proof of Address",
+      label: "Proof of Address*",
       type: "file",
       placeholder: "Upload Proof of Address",
       required: true,
@@ -107,7 +107,7 @@ const NGORegistration = () => {
     },
     {
       name: "auditReport",
-      label: "Audit Report or Financial Statement",
+      label: "Audit Report or Financial Statement (if applicable)",
       type: "file",
       placeholder: "Upload Audit Report or Financial Statement",
       required: false,
@@ -121,7 +121,7 @@ const NGORegistration = () => {
   const allDropdowns = [
     {
       name: "fundingDetails",
-      label: "Funding Details",
+      label: "Funding Details*",
       placeholder: "Select funding sources",
       options: [
         { value: "individuals", label: "Donations from Individuals" },
@@ -139,7 +139,7 @@ const NGORegistration = () => {
     },
     {
       name: "typeOfNGO",
-      label: "Type of NGO",
+      label: "Type of NGO*",
       placeholder: "Select NGO Type",
       options: [
         { value: "trust", label: "Charitable Trust" },
