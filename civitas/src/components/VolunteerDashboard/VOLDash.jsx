@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import VerticalNavbar from "../VerticalNavbar";
-import Discover from "./Discover"; // Component to fetch and display NGOs
+import Discover from "./Discover";
 import NgoHeroSection from "../NGODashboard/Hero";
 import ngoDashboardHero from "../../assets/images/volDashboardHero.jpg";
 

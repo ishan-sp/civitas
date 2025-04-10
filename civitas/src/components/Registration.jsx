@@ -11,17 +11,27 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
         acc[field.name] = "";
       }
       return acc;
-    }, {})
+    }, dropdowns.reduce((acc, dropdown) => {
+      acc[dropdown.name] = ""; // Initialize dropdown fields in formData
+      return acc;
+    }, {}))
   );
 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
-
+  
     if (e.target.type === "file") {
       // Store the file object in the state
       setFormData({ ...formData, [name]: files[0] });
+    } else if (e.target.tagName === "SELECT") {
+      // Handle dropdowns: Find the selected option's label
+      const selectedOption = dropdowns
+        .find((dropdown) => dropdown.name === name)
+        ?.options.find((option) => option.value === value);
+  
+      setFormData({ ...formData, [name]: selectedOption?.label || value });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -48,38 +58,33 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const fileFields = Object.keys(formData).filter((key) => formData[key] instanceof File);
       const textData = { ...formData };
       fileFields.forEach((key) => delete textData[key]);
-  
+
       let fileUrls = [];
       if (fileFields.length > 0) {
         const formDataForFiles = new FormData();
         fileFields.forEach((key) => formDataForFiles.append("files", formData[key]));
-  
-        const uploadResponse = await fetch("http://localhost:3000/upload-files", { // Updated URL
+
+        const uploadResponse = await fetch("http://localhost:3000/upload-files", {
           method: "POST",
           body: formDataForFiles,
         });
-  
+
         if (!uploadResponse.ok) throw new Error("File upload failed");
-        
+
         const uploadData = await uploadResponse.json();
         fileUrls = uploadData.file_urls;
       }
-  
-  
+
       const userType = isngo ? "NGO" : isVol ? "Volunteer" : isStudent ? "Student" : null;
 
-      if (userType == "Volunteer"){
+      if (userType === "Volunteer") {
         textData.resume = fileUrls[0];
-      }
-
-
-
-      else if (userType == "NGO"){
+      } else if (userType === "NGO") {
         textData.RegistrationCertificate = fileUrls[0];
         textData.AddressProof = fileUrls[1];
         textData.TaxExemptionCertificate = fileUrls.length > 2 ? fileUrls[2] : null;
@@ -87,18 +92,16 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
         textData.AuditReportorFinancialStatement = fileUrls.length > 2 ? fileUrls[4] : null;
       }
 
-
-
       if (!userType) throw new Error("User type not specified");
-  
-      const response = await fetch("http://localhost:3000/signup", { // Updated URL
+
+      const response = await fetch("http://localhost:3000/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ ...textData, type: userType }),
       });
-  
+
       const data = await response.json();
       if (response.ok) {
         alert(`${userType} registration successful!`);
@@ -110,8 +113,7 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
       alert("An error occurred. Please try again.");
     }
   };
-  
-  
+
   const containerClasses = isngo
     ? "bg-[#FCF8F1] flex items-start justify-center"
     : "min-h-screen bg-[#FCF8F1] flex items-start justify-center p-4";
@@ -231,20 +233,20 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
                   </select>
                 </div>
               ))}
-                <div className="col-span-1 md:col-span-2 flex flex-col items-center gap-4 mt-6">
-                  <Link
-                    to="/login"
-                    className="bg-gray-300 text-black py-3 px-6 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all font-medium w-1/2 text-center"
-                  >
-                    Back
-                  </Link>
-                  <button
-                    type="submit"
-                    className="bg-yellow-300 text-black py-3 px-6 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-medium w-1/2"
-                  >
-                    Submit
-                  </button>
-                </div>
+              <div className="col-span-1 md:col-span-2 flex flex-col items-center gap-4 mt-6">
+                <Link
+                  to="/login"
+                  className="bg-gray-300 text-black py-3 px-6 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all font-medium w-1/2 text-center"
+                >
+                  Back
+                </Link>
+                <button
+                  type="submit"
+                  className="bg-yellow-300 text-black py-3 px-6 rounded-lg hover:bg-blue-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-medium w-1/2"
+                >
+                  Submit
+                </button>
+              </div>
             </form>
           </div>
         </div>

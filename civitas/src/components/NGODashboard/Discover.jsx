@@ -19,8 +19,15 @@ const Discover = () => {
       <section id="discover-section" className="container mx-auto px-6 lg:px-12 pt-20 pb-4">
         <SearchBar
           data={schools}
-          filterKey="schoolName"
-          onResults={(results) => setFilteredSchools(results)}
+          filterKey={["schoolName", "location"]}
+          onResults={(results) => {
+            const filtered = schools.filter((school) =>
+              results.some((query) =>
+                school.schoolName.toLowerCase().includes(query.toLowerCase()) ||
+                school.location.toLowerCase().includes(query.toLowerCase())
+              )
+            );
+          setFilteredSchools(filtered); }}
         />
         <section id="associate-section" className="container mx-auto px-6 lg:px-12 py-1">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">

@@ -36,9 +36,7 @@ const NGORegistration = () => {
     return [];
   };
 
-  // Combine all fields into a single array
   const allFields = [
-    // Basic Information
     { name: "ngoName", label: "NGO Name", type: "text", placeholder: "Enter NGO Name", required: true },
     { name: "registrationNumber", label: "NGO Registration Number", type: "text", placeholder: "Enter Registration Number", required: true },
     {
@@ -53,12 +51,8 @@ const NGORegistration = () => {
     { name: "facebook", label: "NGO Facebook Link (optional)", type: "url", placeholder: "Enter Facebook URL", required: false },
     { name: "youtube", label: "NGO YouTube Link (optional)", type: "url", placeholder: "Enter YouTube URL", required: false },
     { name: "linkedin", label: "NGO LinkedIn Link (optional)", type: "url", placeholder: "Enter LinkedIn URL", required: false },
-
-    // Mission and Programs
     { name: "missionStatement", label: "Mission Statement*", type: "textarea", placeholder: "Enter Mission Statement", required: true },
     { name: "programDetails", label: "Program Details*", type: "textarea", placeholder: "Describe your programs", required: true },
-
-    // Contact Information
     { name: "primaryContact", label: "Primary Contact Person*", type: "text", placeholder: "Enter Name", required: true },
     { name: "contactRole", label: "Position/Role of Contact Person*", type: "text", placeholder: "Enter Role", required: true },
     { name: "email", label: "Organisation Email Address (used for authentication)*", type: "email", placeholder: "Enter Email", required: true },
@@ -75,8 +69,6 @@ const NGORegistration = () => {
       required: true,
     },
     { name: "alternateContact", label: "Alternate Contact Information", type: "text", placeholder: "Enter Alternate Email or Phone", required: false },
-
-    // Documentation and Impact
     {
       name: "registrationCertificate",
       label: "NGO Registration Certificate*",
