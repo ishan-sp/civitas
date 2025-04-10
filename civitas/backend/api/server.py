@@ -8,6 +8,12 @@ import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File, Depends, status
+from typing import List
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from google.cloud import vision
+import shutil
 from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,6 +31,10 @@ cred = credentials.Certificate(json.loads(firebase_credentials))
 firebase_admin.initialize_app(cred, {
     "storageBucket": "civitas-dd1d6.firebasestorage.app" 
 })
+
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
+client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
 
@@ -181,6 +191,54 @@ async def volunteer_filter (data: VolunteerFilter):
 
     return {"result" : docs}
 
+def verify_firebase_token(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+    try:
+        id_token = auth_header.split("Bearer ")[1]
+        decoded_token = auth.verify_id_token(id_token)
+        return decoded_token
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@app.post ("/login")
+async def login(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
+    uid = decoded_token["uid"]
+    user_doc = db.collection("Student").document(uid).get()
+    if not user_doc.exists:
+        user_doc = db.collection("NGO").document(uid).get()
+    if not user_doc.exists:
+        user_doc = db.collection("Volunteer").document(uid).get()
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+        return user_data
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+
+@app.post("/extract-text")
+async def extract_text_from_image(file: UploadFile = File(...)):
+    try:
+        temp_filename = f"temp_{uuid.uuid4()}.jpg"
+        with open(temp_filename, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        with open(temp_filename, "rb") as image_file:
+            content = image_file.read()
+
+        image = vision.Image(content=content)
+        response = client.text_detection(image=image)
+        texts = response.text_annotations
+
+        os.remove(temp_filename)
+
+        if not texts:
+            return {"message": "No text found."}
+
+        return {"extracted_text": texts[0].description}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error extracting text: {str(e)}")
 
 def main():
     import uvicorn
