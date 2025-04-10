@@ -1,0 +1,75 @@
+NGO Fields
+These fields are used for NGO registration and represent the attributes associated with an NGO.
+Basic Information
+•	ngoName: Name of the NGO (type: text, required: true)
+•	registrationNumber: NGO Registration Number (type: text, required: true)
+•	regionsOfOperation: Regions where the NGO operates (type: dynamic, required: true)
+•	website: NGO Website Link (type: url, required: false)
+•	instagram: NGO Instagram Link (type: url, required: false)
+•	facebook: NGO Facebook Link (type: url, required: false)
+•	youtube: NGO YouTube Link (type: url, required: false)
+•	linkedin: NGO LinkedIn Link (type: url, required: false)
+Mission and Programs
+•	missionStatement: Mission Statement of the NGO (type: textarea, required: true)
+•	programDetails: Details of the NGO's programs (type: textarea, required: true)
+Contact Information
+•	primaryContact: Name of the primary contact person (type: text, required: true)
+•	contactRole: Role/Position of the primary contact person (type: text, required: true)
+•	email: Organisation email address (used for authentication) (type: email, required: true)
+•	password: Password for authentication (type: password, required: true)
+•	phone: Organisation phone number (type: tel, required: true)
+•	address: Registered address of the NGO (type: autocomplete, required: true)
+•	alternateContact: Alternate contact information (type: text, required: false)
+Documentation and Impact
+•	registrationCertificate: NGO Registration Certificate (type: file, required: true)
+•	proofOfAddress: Proof of Address (type: file, required: true)
+•	taxExemptionCertificate: Tax Exemption Certificate (type: file, required: false)
+•	panTanDetails: PAN/TAN Details (type: file, required: false)
+•	auditReport: Audit Report or Financial Statement (type: file, required: false)
+•	impactMetrics: Description of impact metrics (type: textarea, required: false)
+•	volunteerCount: Number of volunteers (type: number, required: false)
+•	volunteerRoles: Types of volunteers needed (type: textarea, required: false)
+•	programDescription: Detailed description of current programs (type: textarea, required: true)
+Dropdowns
+•	fundingDetails: Funding sources (type: dropdown, required: true)
+o	Options: Donations from Individuals, Corporate Sponsorships, Government Grants, etc.
+•	typeOfNGO: Type of NGO (type: dropdown, required: true)
+o	Options: Charitable Trust, Society, Section 8 Company, Other
+________________________________________
+Volunteer Fields
+These fields are used for Volunteer registration and represent the attributes associated with a Volunteer.
+Personal Information
+•	fullName: Full name of the volunteer (type: text, required: true)
+•	email: Email address (type: email, required: true)
+•	password: Password for authentication (type: password, required: true)
+•	phone: Phone number (type: tel, required: true)
+•	age: Age of the volunteer (type: number, required: true)
+•	usn: USN (if the volunteer is an RVCE student) (type: text, required: false)
+Address Information
+•	address: Address of the volunteer (type: autocomplete, required: true)
+•	city: City of residence (type: autocomplete, required: true)
+Additional Information
+•	gender: Gender of the volunteer (type: dropdown, required: true)
+o	Options: Male, Female, Other, Prefer not to say
+•	resume: Resume of the volunteer (type: file, required: true)
+Dropdowns
+•	occupation: Occupation of the volunteer (type: dropdown, required: true)
+o	Options: Teacher, Engineer, Doctor, Artist, etc.
+•	subject: Subjects the volunteer is comfortable teaching (type: dropdown, required: false)
+o	Options: Mathematics, Science, English, etc.
+•	languages: Languages the volunteer is comfortable with (type: dropdown, required: true)
+o	Options: Hindi, Tamil, Telugu, etc.
+________________________________________
+Student Fields
+These fields are used for Student registration and represent the attributes associated with a Student.
+Personal Information
+•	name: Full name of the student (type: text, required: true)
+•	email: Email address (type: email, required: true)
+•	phone: Phone number (type: tel, required: true)
+•	password: Password for authentication (type: password, required: true)
+Dropdowns
+•	school: School the student is associated with (type: dropdown, required: true)
+o	Options: Dynamically fetched from the backend
+•	grade: Grade of the student (type: dropdown, required: false)
+o	Options: Grade 1 to Grade 10
+
