@@ -1,6 +1,8 @@
 import os
 import json
 import firebase_admin
+from pydantic import BaseModel
+from typing import Optional
 from firebase_admin import auth, credentials, firestore, storage
 import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -44,6 +46,25 @@ app.add_middleware(LargeRequestMiddleware)
 
 db = firestore.client()
 bucket = storage.bucket()
+
+class NGOFilter (BaseModel):
+    ngoName: Optional[str] = None
+    regionsOfOperation: Optional[str] = None
+    typeOfNGO: Optional[str] = None
+
+class StudentFilter (BaseModel):
+    name: Optional[str] = None
+    school: Optional[str] = None
+    grade: Optional[str] = None
+
+class VolunteerFilter (BaseModel):
+    fullName : Optional[str] = None
+    age : Optional[str] = None
+    city : Optional[str] = None
+    gender : Optional[str] = None
+    occupation : Optional[str] = None
+    subject : Optional[str] = None
+    languages : Optional[str] = None
 
 @app.get ("/api/schools")
 def schools():
@@ -117,6 +138,49 @@ async def upload_files(files: List[UploadFile] = File(...)):
         file_urls.append(blob.public_url)
 
     return {"file_urls": file_urls}
+
+@app.post ("api/ngos")
+async def ngo_filter (data: NGOFilter):
+    filterDict = data.dict()
+    firebasequery = db.collection("NGO")
+    reqFilters = [param for param in filterDict.keys() if filterDict[param] != None]
+    for filter in reqFilters:
+        if filter != 'regionOfOperation':
+            firebasequery = firebasequery.where (filter, "==", filterDict[filter])
+        else:
+            firebasequery = firebasequery.where (filter, "array-contains", filterDict[filter])
+            
+    result = firebasequery.stream()
+    docs = [doc.to_dict() for doc in result]
+
+    return {"result" : docs}
+
+@app.post ("api/student")
+async def student_filter (data: StudentFilter):
+    filterDict = data.dict()
+    firebasequery = db.collection("Student")
+    reqFilters = [param for param in filterDict.keys() if filterDict[param] != None]
+    for filter in reqFilters:
+        firebasequery = firebasequery.where (filter, "==", filterDict[filter])
+            
+    result = firebasequery.stream()
+    docs = [doc.to_dict() for doc in result]
+
+    return {"result" : docs}
+
+@app.post ("api/volunteer")
+async def volunteer_filter (data: VolunteerFilter):
+    filterDict = data.dict()
+    firebasequery = db.collection("Volunteer")
+    reqFilters = [param for param in filterDict.keys() if filterDict[param] != None]
+    for filter in reqFilters:
+        firebasequery = firebasequery.where (filter, "==", filterDict[filter])
+            
+    result = firebasequery.stream()
+    docs = [doc.to_dict() for doc in result]
+
+    return {"result" : docs}
+
 
 def main():
     import uvicorn
