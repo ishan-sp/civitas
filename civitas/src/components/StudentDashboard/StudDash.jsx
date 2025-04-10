@@ -1,9 +1,10 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
 import ClassCard from "./ClassCard";
 import SidebarItem from "./Sidebar";
 import TopNavbar from "./TopNavbar";
-import Calendar from "./Calendar"; // Import the Calendar component
+import MyCalendar from "./MyCalendar";
 
+// Sample class and calendar data
 const classData = [
   {
     title: "DMS (IS-B)",
@@ -57,7 +58,25 @@ const classesData = [
   },
 ];
 
+const events = classesData.flatMap((classItem) =>
+  classItem.classes.map((session) => {
+    const [date, timeRange] = session.split(" ");
+    const [startTime, endTime] = timeRange.split("-");
+    const start = new Date(`${date}T${startTime}:00`);
+    const end = new Date(`${date}T${endTime}:00`);
+
+    return {
+      title: classItem.title,
+      start,
+      end,
+      desc: `Lecture by ${classItem.teacher}`,
+    };
+  })
+);
+
 function StudDash() {
+  const location = useLocation();
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar */}
@@ -69,8 +88,12 @@ function StudDash() {
           {/* Home Button */}
           <li>
             <Link
-              to="."
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-100 hover:text-blue-700 rounded-lg transition-all duration-200"
+              to="/dashboard/stud"
+              className={`flex items-center gap-3 px-4 py-3 ${
+                location.pathname === "/dashboard/stud"
+                  ? "bg-blue-100 text-blue-700"
+                  : "text-gray-700"
+              } hover:bg-blue-100 hover:text-blue-700 rounded-lg transition-all duration-200`}
             >
               <span className="text-lg font-medium">Home</span>
             </Link>
@@ -79,8 +102,12 @@ function StudDash() {
           {/* Calendar Button */}
           <li>
             <Link
-              to="calendar"
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-100 hover:text-blue-700 rounded-lg transition-all duration-200"
+              to="/dashboard/stud/calendar"
+              className={`flex items-center gap-3 px-4 py-3 ${
+                location.pathname === "/dashboard/stud/calendar"
+                  ? "bg-blue-100 text-blue-700"
+                  : "text-gray-700"
+              } hover:bg-blue-100 hover:text-blue-700 rounded-lg transition-all duration-200`}
             >
               <span className="text-lg font-medium">Calendar</span>
             </Link>
@@ -99,9 +126,9 @@ function StudDash() {
 
         <main className="flex-1 overflow-y-auto p-8">
           <Routes>
-            {/* Home (default route for /dashboard/stud) */}
+            {/* Default home route */}
             <Route
-              path=""
+              index
               element={
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 justify-items-center">
                   {classData.map((classItem, index) => (
@@ -112,10 +139,7 @@ function StudDash() {
             />
 
             {/* Calendar route */}
-            <Route
-              path="calendar"
-              element={<Calendar classes={classesData} />}
-            />
+            <Route path="calendar" element={<MyCalendar events={events} />} />
           </Routes>
         </main>
       </div>
