@@ -195,9 +195,6 @@ const NGORegistration = () => {
         isNotEnd={true}
         isFirst={true}
         isngo={true}
-        onSubmit={(formData) => {
-          handleSubmit(formData);
-        }}
       />
   
       {/* Block 2: Mission and Programs */}
@@ -206,9 +203,6 @@ const NGORegistration = () => {
         dropdowns={missionAndProgramsDropdowns}
         isNotEnd={true}
         isngo={true}
-        onSubmit={(formData) => {
-          handleSubmit(formData);
-        }}
       />
   
       {/* Block 3: Contact Information */}
@@ -216,9 +210,6 @@ const NGORegistration = () => {
         fields={contactInfoFields}
         isNotEnd={true}
         isngo={true}
-        onSubmit={(formData) => {
-          handleSubmit(formData);
-        }}
       />
   
       {/* Block 4: Documentation and Impact */}
@@ -226,9 +217,6 @@ const NGORegistration = () => {
         fields={documentationAndImpactFields}
         isNotEnd={false} // Render Submit and Back buttons
         isngo={true}
-        onSubmit={(formData) => {
-          handleSubmit(formData);
-        }}
       />
     </div>
   );
