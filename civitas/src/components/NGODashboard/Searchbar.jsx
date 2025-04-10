@@ -9,9 +9,17 @@ const SearchBar = ({ data, filterKey, onResults }) => {
 
     // Perform semantic analysis and filtering
     const normalizedQuery = input.toLowerCase().trim();
-    const filteredResults = data.filter((item) =>
-      item[filterKey].toLowerCase().includes(normalizedQuery)
-    );
+
+    const filteredResults = data.filter((item) => {
+      // If filterKey is an array, check all keys
+      if (Array.isArray(filterKey)) {
+        return filterKey.some((key) =>
+          item[key]?.toLowerCase().includes(normalizedQuery)
+        );
+      }
+      // If filterKey is a single string, filter by that key
+      return item[filterKey]?.toLowerCase().includes(normalizedQuery);
+    });
 
     // Return filtered results to the parent component
     onResults(filteredResults);

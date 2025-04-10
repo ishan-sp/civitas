@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import SchoolCard from "../NGODashboard/Card";
+import SearchBar from "../NGODashboard/Searchbar";
 
 const Discover = () => {
   const ngos = [
@@ -15,6 +16,11 @@ const Discover = () => {
 
   return (
     <>
+        <SearchBar
+          data={ngos}
+          filterKey="ngoName"
+          onResults={(results) => setFilteredNgos(results)}
+        />
       <section id="discover-section" className="container mx-auto px-6 lg:px-12 pt-20 pb-4">
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           NGOs You Can Volunteer With
