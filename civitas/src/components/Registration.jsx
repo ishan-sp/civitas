@@ -231,9 +231,6 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
                   </select>
                 </div>
               ))}
-
-              {/* Conditional Buttons */}
-              {!isNotEnd && (
                 <div className="col-span-1 md:col-span-2 flex flex-col items-center gap-4 mt-6">
                   <Link
                     to="/login"
@@ -248,7 +245,6 @@ const RegistrationForm = ({ fields = [], dropdowns = [], onSubmit, isNotEnd = tr
                     Submit
                   </button>
                 </div>
-              )}
             </form>
           </div>
         </div>
