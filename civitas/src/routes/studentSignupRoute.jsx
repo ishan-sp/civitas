@@ -53,28 +53,7 @@ const StudentRegistration = () => {
     },
   ];
 
-  const handleSubmit = async (formData) => {
-    try {
-      const response = await fetch("https://civitas-iota.vercel.app/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to register");
-      }
-
-      const data = await response.json();
-      console.log("Registration successful:", data);
-    } catch (error) {
-      console.error("Error during registration:", error);
-    }
-  };
-
-  return <RegistrationForm isStudent={true} fields={fields} isNotEnd={false} isFirst = {true} dropdowns={dropdowns} onSubmit={handleSubmit} />;
+  return <RegistrationForm isStudent={true} fields={fields} isNotEnd={false} isFirst = {true} dropdowns={dropdowns} />;
 };
 
 export default StudentRegistration;

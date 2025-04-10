@@ -155,26 +155,6 @@ const VolunteerRegistration = () => {
     },
   ];
 
-  const handleSubmit = async (formData) => {
-    try {
-      const response = await fetch("http://localhost:3000/register/volunteer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to register");
-      }
-
-      const data = await response.json();
-      console.log("Registration successful:", data);
-    } catch (error) {
-      console.error("Error during registration:", error);
-    }
-  };
 
   return (
     <div>
@@ -184,9 +164,6 @@ const VolunteerRegistration = () => {
         isFirst={true}
         isVol={true}
         dropdowns={dropdowns}
-        onSubmit={(formData) => {
-          handleSubmit(formData);
-        }}
       />
       {/* Resume Viewer */}
       {resumeFile && (
