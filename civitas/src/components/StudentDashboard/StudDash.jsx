@@ -1,0 +1,126 @@
+import { Routes, Route, Link } from "react-router-dom";
+import ClassCard from "./ClassCard";
+import SidebarItem from "./Sidebar";
+import TopNavbar from "./TopNavbar";
+import Calendar from "./Calendar"; // Import the Calendar component
+
+const classData = [
+  {
+    title: "DMS (IS-B)",
+    teacher: "Dr. Prasanna Kumar T",
+    section: "B",
+    avatarColor: "bg-red-600",
+    bannerColor: "bg-gray-700",
+  },
+  {
+    title: "Computer Networks",
+    teacher: "Rekha B.S.",
+    section: "B",
+    avatarColor: "bg-green-600",
+    bannerColor: "bg-slate-600",
+  },
+  {
+    title: "DAA",
+    teacher: "Ashwini K B",
+    section: "B",
+    avatarColor: "bg-yellow-600",
+    bannerColor: "bg-slate-600",
+  },
+  {
+    title: "DAA(2024-25)",
+    teacher: "Shwetha S",
+    section: "4th A Section",
+    avatarColor: "bg-purple-600",
+    bannerColor: "bg-gray-700",
+  },
+  {
+    title: "IS234AT-LDCO",
+    teacher: "Premananda B S",
+    section: "IS A",
+    avatarColor: "bg-red-600",
+    bannerColor: "bg-teal-800",
+  },
+];
+
+const classesData = [
+  {
+    title: "IS234AT-LDCO",
+    teacher: "Premananda B S",
+    section: "IS A",
+    classes: ["2025-04-10 10:00-11:00", "2025-04-12 14:00-15:00"],
+  },
+  {
+    title: "CS1203-DataStructures",
+    teacher: "Anita Gupta",
+    section: "CS B",
+    classes: ["2025-04-11 09:00-10:00", "2025-04-13 11:00-12:00"],
+  },
+];
+
+function StudDash() {
+  return (
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-72 h-screen overflow-y-auto bg-gray-50 border-r border-gray-200 shadow-sm">
+        <div className="p-5 font-semibold text-xl text-gray-800 border-b border-gray-200">
+          Enrolled
+        </div>
+        <ul className="space-y-1 py-2 px-1">
+          {/* Home Button */}
+          <li>
+            <Link
+              to="."
+              className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-100 hover:text-blue-700 rounded-lg transition-all duration-200"
+            >
+              <span className="text-lg font-medium">Home</span>
+            </Link>
+          </li>
+
+          {/* Calendar Button */}
+          <li>
+            <Link
+              to="calendar"
+              className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-100 hover:text-blue-700 rounded-lg transition-all duration-200"
+            >
+              <span className="text-lg font-medium">Calendar</span>
+            </Link>
+          </li>
+
+          {/* Enrolled Classes List */}
+          {classData.map((classItem, index) => (
+            <SidebarItem key={index} data={classItem} />
+          ))}
+        </ul>
+      </div>
+
+      {/* Main content area */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <TopNavbar />
+
+        <main className="flex-1 overflow-y-auto p-8">
+          <Routes>
+            {/* Home (default route for /dashboard/stud) */}
+            <Route
+              path=""
+              element={
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 justify-items-center">
+                  {classData.map((classItem, index) => (
+                    <ClassCard key={index} data={classItem} />
+                  ))}
+                </div>
+              }
+            />
+
+            {/* Calendar route */}
+            <Route
+              path="calendar"
+              element={<Calendar classes={classesData} />}
+            />
+          </Routes>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default StudDash;

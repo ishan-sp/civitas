@@ -165,6 +165,12 @@ export const Login = () => {
                 >
                   Go to Volunteer Dashboard
                 </button>
+                <button
+                  onClick={() => navigate("/dashboard/stud")}
+                  className="mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Go to Student Dashboard
+                </button>
               </div>
             </div>
           </div>
