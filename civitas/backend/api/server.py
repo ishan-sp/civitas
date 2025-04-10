@@ -118,10 +118,6 @@ async def upload_files(files: List[UploadFile] = File(...)):
 
     return {"file_urls": file_urls}
 
-
-
-
-
 def main():
     import uvicorn
     uvicorn.run (app, host="localhost", port=3000)

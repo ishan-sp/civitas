@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import NgoHeroSection from "./Hero";
 import SearchBar from "./Searchbar";
 import SchoolCard from "./Card";
 
@@ -17,7 +16,6 @@ const Discover = () => {
 
   return (
     <>
-      <NgoHeroSection />
       <section id="discover-section" className="container mx-auto px-6 lg:px-12 pt-20 pb-4">
         <SearchBar
           data={schools}
