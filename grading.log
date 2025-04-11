@@ -1,0 +1,13 @@
+2025-04-12 02:26:01,107 - INFO - Extracted answer for Question 1
+2025-04-12 02:26:01,109 - INFO - Extracted answer for Question 2
+2025-04-12 02:26:01,110 - INFO - Processing batch with questions: ['1', '2']
+2025-04-12 02:26:01,111 - INFO - Tokens remaining in bucket: 59311
+2025-04-12 02:26:01,688 - INFO - Sending request to Azure OpenAI...
+2025-04-12 02:26:01,689 - INFO - Prompt length: 2756 characters
+2025-04-12 02:26:08,646 - INFO - HTTP Request: POST https://ai-graphitestorm8466ai385706727975.services.ai.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2023-07-01-preview "HTTP/1.1 200 OK"
+2025-04-12 02:26:08,653 - INFO - API call completed in 6.97 seconds
+2025-04-12 02:26:08,654 - INFO - Received response of length: 2203 characters
+2025-04-12 02:26:08,666 - INFO - Question 1 - Marks: 10, Similarity: 75.0%, Awarded: 7.5
+2025-04-12 02:26:08,666 - INFO - Reasoning found: Yes
+2025-04-12 02:26:08,668 - INFO - Question 2 - Marks: 10, Similarity: 60.0%, Awarded: 6.0
+2025-04-12 02:26:08,669 - INFO - Reasoning found: Yes
