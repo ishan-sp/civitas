@@ -4,6 +4,7 @@ import SidebarItem from "./Sidebar";
 import TopNavbar from "./TopNavbar";
 import MyCalendar from "./MyCalendar";
 import ClassInfo from "./ClassInfo";
+import ChatbotWidget from "./Chatbot/ChatbotWidget";
 
 // Sample class and calendar data
 const classData = [
@@ -51,15 +52,15 @@ const classData = [
 
 const classesData = [
   {
-    title: "IS234AT-LDCO",
-    teacher: "Premananda B S",
-    section: "IS A",
+    title: "Mathematics",
+    teacher: "Mr Premananda",
+    section: "Grade 5B",
     classes: ["2025-04-10 10:00-11:00", "2025-04-12 14:00-15:00"],
   },
   {
-    title: "CS1203-DataStructures",
-    teacher: "Anita Gupta",
-    section: "CS B",
+    title: "Biology",
+    teacher: "Ms Anita",
+    section: "Grade 5B",
     classes: ["2025-04-11 09:00-10:00", "2025-04-13 11:00-12:00"],
   },
 ];
@@ -129,7 +130,7 @@ function StudDash() {
       {/* Main content area */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <TopNavbar />
-
+        <ChatbotWidget />
         <main className="flex-1 overflow-y-auto p-8">
           <Routes>
             {/* Default home route */}

@@ -1,6 +1,6 @@
 // src/components/StudentDashboard/MyCalendar.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import Modal from 'react-modal';
@@ -8,12 +8,16 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
 
-// Required for react-modal to attach to the DOM
-Modal.setAppElement('#root');
+// Ensure Modal is attached to the root element
+if (typeof document !== 'undefined') {
+  Modal.setAppElement('#root');
+}
 
 const MyCalendar = ({ events }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [view, setView] = useState(Views.MONTH);
+  const [date, setDate] = useState(new Date());
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
@@ -26,7 +30,7 @@ const MyCalendar = ({ events }) => {
   };
 
   return (
-    <div style={{ height: '90vh', padding: '20px' }}>
+    <div style={{ height: '90vh', padding: '20px', overflowY: 'auto' }}>
       <h1 className="text-3xl font-bold text-center mb-4">Class Calendar</h1>
       <Calendar
         localizer={localizer}
@@ -34,7 +38,10 @@ const MyCalendar = ({ events }) => {
         startAccessor="start"
         endAccessor="end"
         views={['month', 'week', 'day', 'agenda']}
-        defaultView="month"
+        view={view}
+        date={date}
+        onView={(newView) => setView(newView)}
+        onNavigate={(newDate) => setDate(newDate)}
         onSelectEvent={handleSelectEvent}
         style={{
           backgroundColor: '#fff',
@@ -49,6 +56,10 @@ const MyCalendar = ({ events }) => {
         onRequestClose={closeModal}
         contentLabel="Event Details"
         style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1000,
+          },
           content: {
             top: '50%',
             left: '50%',
@@ -58,6 +69,8 @@ const MyCalendar = ({ events }) => {
             padding: '30px',
             borderRadius: '10px',
             width: '400px',
+            backgroundColor: '#fff',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
           },
         }}
       >
