@@ -2,6 +2,8 @@ import os
 import json
 import firebase_admin
 from pydantic import BaseModel
+import main as main
+from main import read_txt_as_block, grade_answers
 from typing import Optional
 from firebase_admin import auth, credentials, firestore, storage
 import uuid
@@ -218,9 +220,14 @@ async def login(request: Request, decoded_token: dict = Depends(verify_firebase_
 
 @app.post("/extract-text")
 async def extract_text_from_images(files: List[UploadFile] = File(...)):
+    answer_key = files[0]
+    answer_key_file = f"temp_{uuid.uuid4()}.txt"
+    with open(answer_key_file, "wb") as buffer:
+        shutil.copyfileobj(answer_key.file, buffer)
+    remaining_files = files[1:]
     combined_text = ""
 
-    for file in files:
+    for file in remaining_files:
         temp_filename = f"temp_{uuid.uuid4()}.jpg"
 
         try:
@@ -242,13 +249,22 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
             # Clean up temp file
             if os.path.exists(temp_filename):
                 os.remove(temp_filename)
-
-    return {"extracted_text": combined_text.strip() or "No text found in any image."}
+    student_answer_file = f"temp_{uuid.uuid4()}.txt"
+    with open(student_answer_file, "w") as f:
+        f.write(combined_text.strip())
+    teacher_txt = read_txt_as_block(answer_key_file)
+    student_txt = read_txt_as_block(student_answer_file)
+    results = grade_answers(teacher_txt, student_txt)
+    if os.path.exists(answer_key_file):
+        os.remove(answer_key_file)
+    if os.path.exists(student_answer_file):
+        os.remove(student_answer_file)
+    return results
 
 
 def main():
     import uvicorn
     uvicorn.run (app, host="localhost", port=3000)
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     main()
