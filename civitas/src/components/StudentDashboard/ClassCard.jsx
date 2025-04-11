@@ -5,10 +5,11 @@ export default function ClassCard({ data }) {
   const avatarLetter = data.title?.charAt(0).toUpperCase() || "?";
 
   return (
-    <div className="w-[360px] h-[400px] bg-white/60 backdrop-blur-lg border border-gray-200 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out relative overflow-hidden">
-      
+    <div className="w-full h-[400px] bg-white/60 backdrop-blur-lg border border-gray-200 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out relative overflow-hidden">
       {/* Top Banner */}
-      <div className={`h-32 relative px-6 py-5 ${data.bannerColor} text-white rounded-b-xl`}>
+      <div
+        className={`h-32 relative px-6 py-5 ${data.bannerColor} text-white rounded-b-xl`}
+      >
         <div className="flex justify-between items-start">
           <div className="pr-14">
             <h2 className="font-bold text-xl tracking-tight leading-tight">
@@ -49,9 +50,9 @@ export default function ClassCard({ data }) {
       <div className="px-6 py-4 flex justify-between items-center text-gray-500">
         <span className="text-xs text-gray-400 italic">Resources</span>
         <div className="flex gap-5 text-lg">
-        <Link to="/dashboard/stud/classInfo">
-          <FaRegImage className="text-xl text-grey-600 hover:text-grey cursor-pointer" />
-        </Link>
+          <Link to="/dashboard/stud/classInfo">
+            <FaRegImage className="text-xl text-grey-600 hover:text-grey cursor-pointer" />
+          </Link>
           <FaFolderOpen className="cursor-pointer hover:text-indigo-600 transition-colors" />
         </div>
       </div>

@@ -137,7 +137,7 @@ function StudDash() {
             <Route
               index
               element={
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 justify-items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 md:gap-8">
                   {classData.map((classItem, index) => (
                     <ClassCard key={index} data={classItem} />
                   ))}
