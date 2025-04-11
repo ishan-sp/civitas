@@ -1,38 +1,43 @@
-import React, { useState } from "react";
-import SchoolCard from "../NGODashboard/Card";
+import React from "react";
+import Card from "./Card";
 import SearchBar from "../NGODashboard/Searchbar";
+import { useNavigate } from "react-router-dom";
 
-const Discover = () => {
-  const ngos = [
-    { ngoName: "Helping Hands Foundation", location: "Bengaluru, Karnataka", ngoId: "ngo1" },
-    { ngoName: "Care for All", location: "Mumbai, Maharashtra", ngoId: "ngo2" },
-    { ngoName: "Bright Futures", location: "Delhi, India", ngoId: "ngo3" },
-    { ngoName: "Green Earth Initiative", location: "Chennai, Tamil Nadu", ngoId: "ngo4" },
-    { ngoName: "Hope and Smile", location: "Kolkata, West Bengal", ngoId: "ngo5" },
-    { ngoName: "Education for All", location: "Hyderabad, Telangana", ngoId: "ngo6" },
-  ];
+const Discover = ({ ngos, setSelectedNGO }) => {
+  const [filteredNgos, setFilteredNgos] = React.useState(ngos);
+  const navigate = useNavigate();
 
-  const [filteredNgos, setFilteredNgos] = useState(ngos);
+  React.useEffect(() => {
+    setFilteredNgos(ngos);
+  }, [ngos]);
+
+  const handleCardClick = (ngo) => {
+    setSelectedNGO(ngo);
+    navigate(`?name=${encodeURIComponent(ngo.name)}`);
+  };
 
   return (
     <>
-        <SearchBar
-          data={ngos}
-          filterKey="ngoName"
-          onResults={(results) => setFilteredNgos(results)}
-        />
-      <section id="discover-section" className="container mx-auto px-6 lg:px-12 pt-20 pb-4">
+      <SearchBar
+        data={ngos}
+        filterKey="name"
+        onResults={(results) => setFilteredNgos(results)}
+      />
+
+      <section className="container mx-auto px-6 lg:px-12 pt-10 pb-4">
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           NGOs You Can Volunteer With
         </h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredNgos.map((ngo, index) => (
-            <SchoolCard
-              key={index}
-              schoolName={ngo.ngoName} // Display NGO name
-              location={ngo.location} // Display location as description
-              schoolId={ngo.ngoId} // Use ngoId for unique identification
-            />
+            <div key={index} onClick={() => handleCardClick(ngo)} className="cursor-pointer">
+              <Card
+                name={ngo.ngoName}
+                location={ngo.location}
+                id={ngo.id}
+              />
+            </div>
           ))}
         </div>
       </section>

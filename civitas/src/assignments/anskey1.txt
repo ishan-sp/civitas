@@ -1,17 +1,5 @@
-1. Find the reciprocal of 4
-1
-5
-.
-2. Write the number in decimal form: 428
-10
-3. Subtract: 9.7 - 4.5
-4. In the decimal number 18.75, what is the integral part?
-5. Find the product: 0.5×0.2×0.3
-6. Name the line segment that divides a circle into two equal halves
-7. Given that the radius of a circle is 7cm, find its circumference.
-8. Find the number of halves in 10 1
-2
- .
-9. State whether the following statement is true or false:
-The number of radii in a circle is infinite.
-10. State whether the following statement is true or false:
+Q1 (10 marks):
+Biohazards include bacteria, viruses, fungi, and biological toxins that can harm humans. They can spread infections like TB, HIV, or COVID-19. Exposure to biohazards may happen in labs, hospitals, or agriculture. They pose risks like disease outbreaks and long-term health damage. Proper handling, use of PPE, and strict biosafety protocols are essential to minimize these risks and protect public health.
+
+Q2 (10 marks):
+Biosafety Level II Class B2 cabinets are used to handle moderate-risk pathogens. These cabinets provide protection to personnel, the environment, and the product. Air is drawn through HEPA filters, and 100% of it is exhausted outside to avoid contamination. A neat diagram should show the airflow direction, HEPA filter location, and exhaust system. These cabinets are common in clinical labs and diagnostic centers.
