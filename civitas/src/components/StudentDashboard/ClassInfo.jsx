@@ -28,6 +28,7 @@ export default function ClassInfo() {
   const [uploads, setUploads] = useState({});
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState({});
+  const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
 
   const toggleExpand = (index) => {
     setExpanded(expanded === index ? null : index);
@@ -63,14 +64,14 @@ export default function ClassInfo() {
 
       // Add anskey1 as first file
       const anskeyBlob = await fetch(anskey1).then((res) => res.blob());
-      formData.append("images", new File([anskeyBlob], "anskey1.txt", { type: "text/plain" }));
-
+      const anskeyFile = new File([anskeyBlob], "anskey1.txt", { type: "text/plain" });
+      formData.append("files", anskeyFile);
       // Append uploaded images
       images.forEach((file) => {
-        formData.append("images", file);
+        formData.append("files", file);
       });
 
-      const response = await fetch("http://localhost:3000/getScores", {
+      const response = await fetch("http://localhost:3000/extract-text", {
         method: "POST",
         body: formData,
       });
@@ -79,6 +80,7 @@ export default function ClassInfo() {
 
       const result = await response.json();
       setResults((prev) => ({ ...prev, [index]: result }));
+      setPopupVisible(true); // Show the popup after getting the results
     } catch (err) {
       console.error("Upload error:", err);
       alert("Upload or scoring failed. Please try again.");
@@ -87,15 +89,19 @@ export default function ClassInfo() {
     }
   };
 
+  const closePopup = () => {
+    setPopupVisible(false);
+  };
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       {/* Big Penguin Image */}
       <div className="mb-8 text-center">
-      <img
-  src={penguin}
-  alt="Penguin"
-  className="w-110 h-auto mx-auto rounded-xl object-contain"
-/>
+        <img
+          src={penguin}
+          alt="Penguin"
+          className="w-110 h-auto mx-auto rounded-xl object-contain"
+        />
       </div>
 
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Assignments</h1>
@@ -182,22 +188,77 @@ export default function ClassInfo() {
                     {loading ? "Uploading..." : "Upload Answer"}
                   </button>
                 </div>
-
-                {results[index] && (
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200 mt-4">
-                    <h4 className="font-semibold text-green-800 mb-2">
-                      Your Score: {results[index].score}/10
-                    </h4>
-                    <p className="text-green-700 text-sm whitespace-pre-line">
-                      {results[index].comments || "No additional comments."}
-                    </p>
-                  </div>
-                )}
               </div>
             )}
           </div>
         ))}
       </div>
+
+      {/* Popup for result */}
+      {popupVisible && results && Object.keys(results).length > 0 && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+            <button
+              className="absolute top-2 right-2 text-red-500"
+              onClick={closePopup}
+            >
+              <IoClose size={20} />
+            </button>
+            <h3 className="text-xl font-semibold mb-4">Grading Report</h3>
+
+            <div className="space-y-4">
+              {Object.entries(results).map(([assignmentIndex, result]) => (
+                <div key={assignmentIndex}>
+                  <h4 className="font-medium text-gray-700 mb-2">
+                    Assignment {parseInt(assignmentIndex) + 1}
+                  </h4>
+                  <div className="space-y-2">
+                    {result.grading_results &&
+                      Object.entries(result.grading_results).map(
+                        ([question, grading]) => (
+                          <div key={question} className="bg-gray-50 p-3 rounded-md">
+                            <h5 className="font-semibold text-gray-800">
+                              Question {question}
+                            </h5>
+                            <p className="text-sm text-gray-600">
+                              Marks Awarded: {grading.marks_awarded} /{" "}
+                              {grading.total_marks}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Reasoning: {grading.reasoning}
+                            </p>
+                          </div>
+                        )
+                      )}
+                    <div className="mt-4">
+                      <h5 className="font-semibold text-gray-800">Summary</h5>
+                      <p className="text-sm text-gray-600">
+                        Total Marks Awarded: {result.summary.total_marks_awarded} /{" "}
+                        {result.summary.total_marks_possible}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Percentage: {result.summary.percentage_score}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 text-center">
+              {results && results.summary && results.summary.percentage_score >= 50 ? (
+                <span role="img" aria-label="celebration">
+                  🎉🎉🎉
+                </span>
+              ) : (
+                <span role="img" aria-label="sad">
+                  😞😞😞
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
