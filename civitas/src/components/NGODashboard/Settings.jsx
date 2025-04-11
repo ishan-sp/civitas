@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProfileContainer from "./ProfileContainer";
+import {onAuthStateChanged} from "firebase/auth";
+import { auth } from "../../firebase"; 
 
 const SettingsSection = () => {
   const [profileData, setProfileData] = useState(null);
@@ -7,27 +9,31 @@ const SettingsSection = () => {
   const [hasError, setHasError] = useState(false); // State to track errors
 
   useEffect(() => {
-    const fetchProfileData = async () => {
-      setIsLoading(true);
-      setHasError(false); // Reset error state before fetching
-      try {
-        const response = await fetch("https://civitas-iota.vercel.app/ngo/profile");
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsLoading(true);
+        setHasError(false);
+        const idToken = await user.getIdToken();
+        const response = await fetch("http://localhost:3000/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setProfileData(data);
-        } else {
-          console.error("Failed to fetch profile data");
-          setHasError(true); // Set error state if response is not OK
         }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-        setHasError(true); // Set error state on fetch failure
-      } finally {
+        else {
+          console.error("Failed to fetch profile data");
+          setHasError(true);
+        }
         setIsLoading(false);
       }
-    };
+    });
 
-    fetchProfileData();
+    return () => unsubscribe();
   }, []);
 
   return (
