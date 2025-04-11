@@ -3,43 +3,49 @@ import ClassCard from "./ClassCard";
 import SidebarItem from "./Sidebar";
 import TopNavbar from "./TopNavbar";
 import MyCalendar from "./MyCalendar";
+import ClassInfo from "./ClassInfo";
 
 // Sample class and calendar data
 const classData = [
   {
-    title: "DMS (IS-B)",
-    teacher: "Dr. Prasanna Kumar T",
-    section: "B",
+    title: "Mathematics",
+    teacher: "Mr Prasanna",
+    section: "Grade 5B",
     avatarColor: "bg-red-600",
     bannerColor: "bg-gray-700",
+    path: "/dashboard/stud/classInfo",
   },
   {
-    title: "Computer Networks",
-    teacher: "Rekha B.S.",
-    section: "B",
+    title: "Political Science",
+    teacher: "Ms Rekha",
+    section: "Grade 5B",
     avatarColor: "bg-green-600",
     bannerColor: "bg-slate-600",
+    path: "/dashboard/stud/classInfo",
   },
   {
-    title: "DAA",
-    teacher: "Ashwini K B",
-    section: "B",
+    title: "Biology",
+    teacher: "Ms Shwetha",
+    section: "Grade 5B",
     avatarColor: "bg-yellow-600",
     bannerColor: "bg-slate-600",
+    path: "/dashboard/stud/classInfo",
   },
   {
-    title: "DAA(2024-25)",
-    teacher: "Shwetha S",
-    section: "4th A Section",
+    title: "Science",
+    teacher: "Mr Rajgopalan",
+    section: "Grade 5B",
     avatarColor: "bg-purple-600",
     bannerColor: "bg-gray-700",
+    path: "/dashboard/stud/classInfo",
   },
   {
-    title: "IS234AT-LDCO",
-    teacher: "Premananda B S",
-    section: "IS A",
+    title: "Kannada",
+    teacher: "Ms Suman",
+    section: "Grade 5B",
     avatarColor: "bg-red-600",
     bannerColor: "bg-teal-800",
+    path: "/dashboard/stud/classInfo",
   },
 ];
 
@@ -138,8 +144,9 @@ function StudDash() {
               }
             />
 
-            {/* Calendar route */}
+            {/* Nested routes for class info and calendar */}
             <Route path="calendar" element={<MyCalendar events={events} />} />
+            <Route path="classInfo" element={<ClassInfo />} />
           </Routes>
         </main>
       </div>
