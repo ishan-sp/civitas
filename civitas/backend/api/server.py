@@ -217,32 +217,38 @@ async def login(request: Request, decoded_token: dict = Depends(verify_firebase_
         raise HTTPException(status_code=404, detail="User not found")
 
 @app.post("/extract-text")
-async def extract_text_from_image(file: UploadFile = File(...)):
-    try:
+async def extract_text_from_images(files: List[UploadFile] = File(...)):
+    combined_text = ""
+
+    for file in files:
         temp_filename = f"temp_{uuid.uuid4()}.jpg"
-        with open(temp_filename, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
 
-        with open(temp_filename, "rb") as image_file:
-            content = image_file.read()
+        try:
+            # Save the uploaded file temporarily
+            with open(temp_filename, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
 
-        image = vision.Image(content=content)
-        response = client.text_detection(image=image)
-        texts = response.text_annotations
+            # Read and send image to Google Vision
+            with open(temp_filename, "rb") as image_file:
+                content = image_file.read()
 
-        os.remove(temp_filename)
+            image = vision.Image(content=content)
+            response = client.text_detection(image=image)
+            texts = response.text_annotations
 
-        if not texts:
-            return {"message": "No text found."}
+            if texts:
+                combined_text += texts[0].description + "\n"
+        finally:
+            # Clean up temp file
+            if os.path.exists(temp_filename):
+                os.remove(temp_filename)
 
-        return {"extracted_text": texts[0].description}
+    return {"extracted_text": combined_text.strip() or "No text found in any image."}
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error extracting text: {str(e)}")
 
 def main():
     import uvicorn
     uvicorn.run (app, host="localhost", port=3000)
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
