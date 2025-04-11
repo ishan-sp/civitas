@@ -1,6 +1,6 @@
 import { FaEllipsisV } from "react-icons/fa";
 import { FaFolderOpen, FaRegImage } from "react-icons/fa6";
-
+import { Link } from "react-router-dom";
 export default function ClassCard({ data }) {
   const avatarLetter = data.title?.charAt(0).toUpperCase() || "?";
 
@@ -49,7 +49,9 @@ export default function ClassCard({ data }) {
       <div className="px-6 py-4 flex justify-between items-center text-gray-500">
         <span className="text-xs text-gray-400 italic">Resources</span>
         <div className="flex gap-5 text-lg">
-          <FaRegImage className="cursor-pointer hover:text-indigo-600 transition-colors" />
+        <Link to="/dashboard/stud/classInfo">
+          <FaRegImage className="text-xl text-grey-600 hover:text-grey cursor-pointer" />
+        </Link>
           <FaFolderOpen className="cursor-pointer hover:text-indigo-600 transition-colors" />
         </div>
       </div>
