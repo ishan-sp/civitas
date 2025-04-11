@@ -110,12 +110,12 @@ export const Login = () => {
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                       <input
-                        type="text"
-                        name="username"
+                        type="email"
+                        name="email"
                         value={formData.email}
                         onChange={handleInputChange}
                         className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                        placeholder="Enter your username"
+                        placeholder="Enter your email"
                         required
                       />
                     </div>
