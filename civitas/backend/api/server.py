@@ -250,5 +250,5 @@ def main():
     import uvicorn
     uvicorn.run (app, host="localhost", port=3000)
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     main()
