@@ -1,14 +1,7 @@
 import { Link } from "react-router-dom";
-import {
-  Globe,
-  MapPin,
-  Users,
-  Info,
-  User,
-  Link2,
-} from "lucide-react";
+import { Globe, MapPin, Users, Info, User, Link2 } from "lucide-react";
 
-export default function Card({ ngo = {} }) {
+export default function Card({ ngo }) {
   const {
     ngoName,
     regionsOfOperation,
@@ -23,15 +16,11 @@ export default function Card({ ngo = {} }) {
     typeOfNGO,
   } = ngo;
 
-  const socials = {
-    instagram,
-    facebook,
-    linkedin,
-    youtube,
-  };
+  // Create an object for social media links for easy mapping
+  const socials = { instagram, facebook, linkedin, youtube };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 max-w-md flex flex-col justify-between hover:shadow-xl transition-shadow">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 max-w-md flex flex-col justify-between hover:shadow-xl transition-shadow min-h-[400px]"> {/* Reduced min-height */}
       {/* Header */}
       <div className="mb-4">
         <div className="flex justify-between items-start">
@@ -47,7 +36,7 @@ export default function Card({ ngo = {} }) {
         </div>
       </div>
 
-      {/* Mission */}
+      {/* Mission Statement */}
       <div className="mb-4">
         <h3 className="text-sm text-gray-700 font-medium mb-1 flex items-center">
           <Info className="w-4 h-4 mr-1" />
@@ -56,7 +45,7 @@ export default function Card({ ngo = {} }) {
         <p className="text-sm text-gray-600 line-clamp-3">{missionStatement}</p>
       </div>
 
-      {/* Contact Info */}
+      {/* Contact Information */}
       <div className="mb-4 text-sm text-gray-700">
         <div className="flex items-center mb-1">
           <User className="w-4 h-4 mr-2" />
@@ -64,7 +53,7 @@ export default function Card({ ngo = {} }) {
           <span className="ml-1 text-gray-500">{contactRole}</span>
         </div>
 
-        {/* Website */}
+        {/* Website Link */}
         {website && (
           <div className="flex items-center mt-1">
             <Globe className="w-4 h-4 mr-2 text-blue-500" />
@@ -80,7 +69,7 @@ export default function Card({ ngo = {} }) {
         )}
       </div>
 
-      {/* Social Links */}
+      {/* Social Media Links */}
       <div className="flex gap-3 mb-4">
         {Object.entries(socials).map(
           ([platform, link]) =>
@@ -99,13 +88,14 @@ export default function Card({ ngo = {} }) {
       </div>
 
       {/* Association Link */}
-      <Link
-        to="/associate"
-        state={{ ngo }}
-        className="w-full text-center bg-yellow-500 text-white text-sm font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 transition"
-      >
-        Associate with this NGO
-      </Link>
+      <div className="mt-4">
+        <Link
+          to="/dashboard/vol" // Use the correct route here
+          className="text-black bg-yellow-400 hover:bg-blue-700 px-4 py-2 rounded-lg text-center w-full block text-sm font-medium"
+        >
+          View details
+        </Link>
+      </div>
     </div>
   );
 }

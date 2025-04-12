@@ -13,7 +13,7 @@ const Discover = ({ ngos, setSelectedNGO }) => {
 
   const handleCardClick = (ngo) => {
     setSelectedNGO(ngo);
-    navigate(`?name=${encodeURIComponent(ngo.name)}`);
+    navigate(`?name=${encodeURIComponent(ngo.ngoName)}`);
   };
 
   return (
@@ -32,11 +32,7 @@ const Discover = ({ ngos, setSelectedNGO }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredNgos.map((ngo, index) => (
             <div key={index} onClick={() => handleCardClick(ngo)} className="cursor-pointer">
-              <Card
-                name={ngo.ngoName}
-                location={ngo.location}
-                id={ngo.id}
-              />
+              <Card ngo={ngo} /> {/* Pass the whole ngo object here */}
             </div>
           ))}
         </div>
