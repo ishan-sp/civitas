@@ -151,21 +151,47 @@ async def upload_files(files: List[UploadFile] = File(...)):
 
     return {"file_urls": file_urls}
 
-@app.post ("api/ngos")
-async def ngo_filter (data: NGOFilter):
-    filterDict = data.dict()
-    firebasequery = db.collection("NGO")
-    reqFilters = [param for param in filterDict.keys() if filterDict[param] != None]
-    for filter in reqFilters:
-        if filter != 'regionOfOperation':
-            firebasequery = firebasequery.where (filter, "==", filterDict[filter])
+from fastapi import APIRouter, Query
+from typing import Optional, List
+from firebase_admin import firestore
+
+db = firestore.client()
+
+from fastapi import Query
+from typing import Optional
+from firebase_admin import firestore
+
+db = firestore.client()
+
+@app.get("/api/ngos")
+async def ngo_filter(
+    name: Optional[str] = Query(None),
+    type: Optional[str] = Query(None),
+    verified: Optional[bool] = Query(None),
+    regionOfOperation: Optional[str] = Query(None)
+):
+    filter_dict = {
+        "name": name,
+        "type": type,
+        "verified": verified,
+        "regionOfOperation": regionOfOperation
+    }
+
+    firebase_query = db.collection("NGO")
+    req_filters = [key for key, val in filter_dict.items() if val is not None]
+
+    for key in req_filters:
+        if key == "regionOfOperation":
+            firebase_query = firebase_query.where(key, "array-contains", filter_dict[key])
         else:
-            firebasequery = firebasequery.where (filter, "array-contains", filterDict[filter])
-            
-    result = firebasequery.stream()
+            firebase_query = firebase_query.where(key, "==", filter_dict[key])
+
+    result = firebase_query.stream()
     docs = [doc.to_dict() for doc in result]
 
-    return {"result" : docs}
+    return {"result": docs}
+
+
 
 @app.post ("api/student")
 async def student_filter (data: StudentFilter):
