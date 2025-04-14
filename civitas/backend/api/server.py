@@ -10,14 +10,14 @@ import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File, Depends, status
+from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File, Depends, status, Query
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from google.cloud import vision
 import shutil
 from fastapi import FastAPI, HTTPException, Header, Request, UploadFile, File
-from typing import List
+from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
@@ -151,18 +151,6 @@ async def upload_files(files: List[UploadFile] = File(...)):
 
     return {"file_urls": file_urls}
 
-from fastapi import APIRouter, Query
-from typing import Optional, List
-from firebase_admin import firestore
-
-db = firestore.client()
-
-from fastapi import Query
-from typing import Optional
-from firebase_admin import firestore
-
-db = firestore.client()
-
 @app.get("/api/ngos")
 async def ngo_filter(
     name: Optional[str] = Query(None),
@@ -241,6 +229,16 @@ async def login(request: Request, decoded_token: dict = Depends(verify_firebase_
         return user_data
     else:
         raise HTTPException(status_code=404, detail="User not found")
+    
+@app.post ("/logout")
+async def logout (decoded_token: dict = Depends(verify_firebase_token)):
+    try:
+        uid = decoded_token["uid"]
+        auth.revoke_refresh_tokens(uid)
+        return {"message": "Logout successful"}
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
     
 @app.get ("/user-profile")
 async def getProfile(decoded_token: dict = Depends(verify_firebase_token)):
