@@ -1,19 +1,31 @@
 import { Link as ScrollLink } from "react-scroll";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+
 
 function VerticalNavbar({ links = [] }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
     try {
-      const response = await fetch("http://localhost:3000/logout", {
-        method: "POST",
-        credentials: "include", // Include cookies if needed
-      });
+      if (user){
+        const idToken = await user.getIdToken();
+        const response = await fetch("http://localhost:3000/logout", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json"
+        }
+        });
 
       if (!response.ok) {
         throw new Error("Failed to log out");
       }
+    }
+
+    await signOut(auth);
 
       // Clear any local storage or authentication tokens if necessary
       localStorage.removeItem("token");

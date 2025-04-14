@@ -3,11 +3,13 @@ import DropdownField from "../Profile/DropdownField";
 import EditableField from "../Profile/EditableField";
 import FileUploadViewer from "../Profile/FileUploadViewer";
 import TextAreaField from "../Profile/TextAreaField";
+import {onAuthStateChanged} from "firebase/auth";
+import { auth } from "../../firebase";
 
 const Settings = ({ user }) => {
   const [profileData, setProfileData] = useState(null); // Initially null until data is fetched
   const [loading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setHasError] = useState(null);
 
   // Field definitions from VolunteerSignupRoute
   const fields = [
@@ -74,38 +76,32 @@ const Settings = ({ user }) => {
 
   // Fetch profile data from the server
   useEffect(() => {
-    const fetchProfileData = async (user) => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const idToken = await user.getIdToken(true);
-
-        const response = await fetch("http://localhost:3000/user-profile", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setProfileData(data);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError(err.message || "Failed to fetch profile data");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (user) {
-      fetchProfileData(user);
-    }
-  }, [user]);
+     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+       if (user) {
+         setIsLoading(true);
+         setHasError(false);
+         const idToken = await user.getIdToken();
+         const response = await fetch("http://localhost:3000/user-profile", {
+           method: "GET",
+           headers: {
+             "Content-Type": "application/json",
+             Authorization: `Bearer ${idToken}`,
+           },
+         });
+         if (response.ok) {
+           const data = await response.json();
+           setProfileData(data);
+         }
+         else {
+           console.error("Failed to fetch profile data");
+           setHasError(true);
+         }
+         setIsLoading(false);
+       }
+     });
+ 
+     return () => unsubscribe();
+   }, [user]);
 
   // Handle save for editable fields
   const handleSave = (name, value) => {
