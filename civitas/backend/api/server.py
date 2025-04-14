@@ -35,7 +35,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "../lively-oxide-453105-k9-3c99f8bc8007.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
 client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
@@ -241,6 +241,16 @@ async def login(request: Request, decoded_token: dict = Depends(verify_firebase_
         return user_data
     else:
         raise HTTPException(status_code=404, detail="User not found")
+    
+@app.get ("/user-profile")
+async def getProfile(decoded_token: dict = Depends(verify_firebase_token)):
+    uid = decoded_token["uid"]
+    collections = ["Student", "Volunteer", "NGO"]
+    for collection in collections :
+        user_doc = db.collection(collection).document(uid).get()
+        if user_doc.exists:
+            return user_doc.to_dict()
+    raise HTTPException(status_code=404, detail="User not found")
 
 @app.post("/extract-text")
 async def extract_text_from_images(files: List[UploadFile] = File(...)):

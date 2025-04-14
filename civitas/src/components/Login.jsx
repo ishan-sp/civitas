@@ -27,8 +27,8 @@ export const Login = () => {
         });
         const data = await response.json();
 
-        if (data.type === "NGO") navigate("/dashboard/ngo");
-        else if (data.type === "Student") navigate("/dashboard/stud");
+        //if (data.type === "NGO") navigate("/dashboard/ngo");
+        if (data.type === "Student") navigate("/dashboard/stud");
         else if (data.type === "Volunteer") navigate("/dashboard/vol");
       }
     });
