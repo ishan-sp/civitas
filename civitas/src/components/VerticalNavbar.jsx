@@ -1,7 +1,30 @@
 import { Link as ScrollLink } from "react-scroll";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 function VerticalNavbar({ links = [] }) {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/logout", {
+        method: "POST",
+        credentials: "include", // Include cookies if needed
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log out");
+      }
+
+      // Clear any local storage or authentication tokens if necessary
+      localStorage.removeItem("token");
+
+      // Redirect to the login page or home page
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
   return (
     <div className="fixed top-0 left-0 h-full w-64 bg-[#FCF8F1] shadow-lg overflow-y-auto">
       {/* Logo */}
@@ -40,6 +63,14 @@ function VerticalNavbar({ links = [] }) {
             </RouterLink>
           );
         })}
+
+        {/* Logout Link */}
+        <button
+          onClick={handleLogout}
+          className="w-full px-4 py-2 text-base text-black transition-all duration-200 rounded-lg hover:bg-red-300 hover:text-black focus:bg-red-300 focus:text-black"
+        >
+          Logout
+        </button>
       </nav>
     </div>
   );

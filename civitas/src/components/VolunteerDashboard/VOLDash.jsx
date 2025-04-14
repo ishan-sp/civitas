@@ -3,8 +3,8 @@ import { Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import VerticalNavbar from "../VerticalNavbar";
 import Discover from "./Discover";
 import Settings from "./Settings";
-import MyNGOs from "./MyNGOs";
 import NGOAssociate from "./NGOAssociate";
+import MyNGOs from "./MyNGOs";
 
 const VOLDash = () => {
   const [ngos, setNgos] = useState([]);

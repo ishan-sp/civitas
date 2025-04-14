@@ -1,92 +1,195 @@
 import React, { useState, useEffect } from "react";
-import ProfileContainer from "./ProfileContainer";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../firebase";
+import DropdownField from "../Profile/DropdownField";
+import EditableField from "../Profile/EditableField";
+import FileUploadViewer from "../Profile/FileUploadViewer";
+import TextAreaField from "../Profile/TextAreaField";
 
-const SettingsSection = () => {
-  const [profileData, setProfileData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); 
+const Settings = ({ user }) => {
+  const [profileData, setProfileData] = useState(null); // Initially null until data is fetched
+  const [loading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchProfileData = async (user) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-   
-      const idToken = await user.getIdToken(true); 
-      
-      const response = await fetch("http://localhost:3000/user-profile", { 
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${idToken}`,
-        },
-      });
+  // Field definitions from VolunteerSignupRoute
+  const fields = [
+    { name: "fullName", label: "Full Name", type: "text", required: true },
+    { name: "email", label: "Email", type: "email", required: true },
+    { name: "phone", label: "Phone Number", type: "tel", required: true },
+    { name: "age", label: "Age", type: "number", required: true },
+    { name: "gender", label: "Gender", type: "dropdown", required: true },
+    { name: "address", label: "Address", type: "text", required: true },
+    { name: "city", label: "City", type: "text", required: true },
+    { name: "occupation", label: "Occupation", type: "dropdown", required: true },
+    { name: "subject", label: "Subjects Comfortable Teaching", type: "dropdown", required: false },
+    { name: "languages", label: "Languages Comfortable With", type: "dropdown", required: true },
+    { name: "resume", label: "Resume", type: "file", required: true },
+  ];
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setProfileData(data);
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError(err.message || "Failed to fetch profile data");
-    } finally {
-      setIsLoading(false);
-    }
+  // Dropdown options (from VolunteerSignupRoute)
+  const dropdownOptions = {
+    gender: [
+      { value: "male", label: "Male" },
+      { value: "female", label: "Female" },
+      { value: "other", label: "Other" },
+      { value: "prefer_not_to_say", label: "Prefer not to say" },
+    ],
+    occupation: [
+      { value: "teacher", label: "Teacher" },
+      { value: "engineer", label: "Engineer" },
+      { value: "doctor", label: "Doctor" },
+      { value: "artist", label: "Artist" },
+      { value: "student", label: "Student" },
+      { value: "freelancer", label: "Freelancer" },
+      { value: "business", label: "Business Owner" },
+      { value: "retired", label: "Retired" },
+      { value: "self_employed", label: "Self-employed" },
+      { value: "other", label: "Other" },
+    ],
+    subject: [
+      { value: "math", label: "Mathematics" },
+      { value: "science", label: "Science" },
+      { value: "english", label: "English" },
+      { value: "history", label: "History" },
+      { value: "geography", label: "Geography" },
+      { value: "physics", label: "Physics" },
+      { value: "chemistry", label: "Chemistry" },
+      { value: "biology", label: "Biology" },
+      { value: "computer", label: "Computer Science" },
+      { value: "arts", label: "Arts" },
+    ],
+    languages: [
+      { value: "english", label: "English" },
+      { value: "hindi", label: "Hindi" },
+      { value: "tamil", label: "Tamil" },
+      { value: "telugu", label: "Telugu" },
+      { value: "marathi", label: "Marathi" },
+      { value: "bengali", label: "Bengali" },
+      { value: "gujarati", label: "Gujarati" },
+      { value: "kannada", label: "Kannada" },
+      { value: "malayalam", label: "Malayalam" },
+      { value: "punjabi", label: "Punjabi" },
+      { value: "odia", label: "Odia" },
+      { value: "other", label: "Other" },
+    ],
   };
 
+  // Fetch profile data from the server
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        fetchProfileData(user);
-      } else {
-        setError("No authenticated user");
+    const fetchProfileData = async (user) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const idToken = await user.getIdToken(true);
+
+        const response = await fetch("http://localhost:3000/user-profile", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProfileData(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError(err.message || "Failed to fetch profile data");
+      } finally {
         setIsLoading(false);
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, []);
-
-  const handleRetry = async () => {
-    const user = auth.currentUser;
     if (user) {
-      await fetchProfileData(user);
+      fetchProfileData(user);
     }
+  }, [user]);
+
+  // Handle save for editable fields
+  const handleSave = (name, value) => {
+    setProfileData((prev) => ({ ...prev, [name]: value }));
+    console.log(`Updated ${name}:`, value);
   };
 
+  if (loading) {
+    return <div className="text-center text-gray-600 text-xl">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-600 text-xl">{error}</div>;
+  }
+
   return (
-    <section id="settings-section" className="container mx-auto px-6 lg:px-12 pt-20 pb-4">
-      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Settings</h2>
-      
-      {isLoading ? (
-        <div className="flex justify-center items-center">
-          <div className="loader border-t-4 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
-          <p className="ml-4 text-gray-600">Loading...</p>
-        </div>
-      ) : error ? (
-        <div className="text-center">
-          <h1 className="text-red-600 text-2xl font-bold mb-4">{error}</h1>
-          <button 
-            onClick={handleRetry}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Retry
-          </button>
-        </div>
-      ) : profileData ? (
-        <div className="space-y-4">
-            <ProfileContainer 
-              profileData={profileData}
-            />
-        </div>
-      ) : (
-        <p className="text-center text-gray-600">No profile data available</p>
-      )}
-    </section>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6">Volunteer Settings</h1>
+      <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
+        {fields.map((field) => {
+          const value = profileData[field.name];
+          const isRequired = field.required;
+
+          // Render based on field type
+          switch (field.type) {
+            case "text":
+            case "email":
+            case "tel":
+            case "number":
+              return (
+                <EditableField
+                  key={field.name}
+                  label={field.label}
+                  name={field.name}
+                  value={value}
+                  type={field.type}
+                  required={isRequired}
+                  onSave={handleSave}
+                />
+              );
+
+            case "dropdown":
+              return (
+                <DropdownField
+                  key={field.name}
+                  label={field.label}
+                  name={field.name}
+                  value={value}
+                  options={dropdownOptions[field.name] || []}
+                  required={isRequired}
+                  onSave={handleSave}
+                />
+              );
+
+            case "textarea":
+              return (
+                <TextAreaField
+                  key={field.name}
+                  label={field.label}
+                  name={field.name}
+                  value={value}
+                  required={isRequired}
+                  onSave={handleSave}
+                />
+              );
+
+            case "file":
+              return (
+                <FileUploadViewer
+                  key={field.name}
+                  label={field.label}
+                  name={field.name}
+                  fileUrl={value}
+                  onSave={handleSave}
+                />
+              );
+
+            default:
+              return null;
+          }
+        })}
+      </div>
+    </div>
   );
 };
 
-export default SettingsSection;
+export default Settings;
