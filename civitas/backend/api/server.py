@@ -187,11 +187,9 @@ async def ngo_filter(
             firebase_query = firebase_query.where(key, "==", filter_dict[key])
 
     result = firebase_query.stream()
-    docs = [doc.to_dict() for doc in result]
+    docs = [{"id": doc.id, **doc.to_dict()} for doc in result]  # Add document ID to the response
 
     return {"result": docs}
-
-
 
 @app.post ("api/student")
 async def student_filter (data: StudentFilter):
@@ -286,6 +284,39 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
     if os.path.exists(student_answer_file):
         os.remove(student_answer_file)
     return results
+
+
+@app.get("/get-vol-profile")
+async def get_volunteer_profile(volunteer_id: str):
+    try:
+        print(f"Querying Firestore for document ID: {volunteer_id}")
+        
+        # Query the Firestore database for the volunteer document
+        volunteer_ref = db.collection("Volunteer").document(volunteer_id)
+        volunteer_doc = volunteer_ref.get()
+
+        if not volunteer_doc.exists:
+            print(f"Document with ID {volunteer_id} not found in Volunteer collection.")
+            raise HTTPException(status_code=404, detail="Volunteer not found")
+
+        # Extract volunteer data
+        volunteer_data = volunteer_doc.to_dict()
+        print(f"Volunteer data: {volunteer_data}")
+
+        # Handle file fields (e.g., resume)
+        if "resume" in volunteer_data:
+            resume_path = volunteer_data["resume"]
+            blob = bucket.blob(resume_path)
+            if blob.exists():
+                volunteer_data["resume"] = blob.public_url
+            else:
+                volunteer_data["resume"] = None
+
+        return {"status": "success", "data": volunteer_data}
+
+    except Exception as e:
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 def main():

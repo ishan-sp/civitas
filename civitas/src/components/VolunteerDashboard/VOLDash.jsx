@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import VerticalNavbar from "../VerticalNavbar";
 import Discover from "./Discover";
-import NgoHeroSection from "../NGODashboard/Hero";
+import Settings from "./Settings";
+import MyNGOs from "./MyNGOs";
 import NGOAssociate from "./NGOAssociate";
-import ngoDashboardHero from "../../assets/images/volDashboardHero.jpg";
-import { useSearchParams } from "react-router-dom";
 
 const VOLDash = () => {
-  const [activeSection, setActiveSection] = useState("discover");
   const [ngos, setNgos] = useState([]);
   const [selectedNGO, setSelectedNGO] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,52 +29,60 @@ const VOLDash = () => {
     fetchNGOs();
   }, []);
 
-  // Auto-open NGO associate view from search param
   useEffect(() => {
-    const name = searchParams.get("name");
-    if (name && ngos.length > 0) {
-      const found = ngos.find((ngo) =>
-        ngo.ngoName?.toLowerCase().includes(name.toLowerCase())
-      );
-      if (found) {
-        setSelectedNGO(found);
-        setActiveSection("associate");
-      }
+    const id = searchParams.get("id");
+    if (id && ngos.length > 0) {
+      const foundNGO = ngos.find((ngo) => ngo.id.toString() === id); // toString to avoid type mismatch
+      setSelectedNGO(foundNGO || null);
     }
   }, [searchParams, ngos]);
+  
 
   return (
     <div className="flex bg-[#FCF8F1] min-h-screen">
+      {/* Sidebar */}
       <VerticalNavbar
         links={[
-          { name: "Discover", onClick: () => setActiveSection("discover") },
-          { name: "Settings", onClick: () => setActiveSection("settings") },
-          { name: "My NGOs", onClick: () => setActiveSection("settings") },
+          { name: "Discover", href: "/dashboard/vol/discover" },
+          { name: "Settings", href: "/dashboard/vol/settings" },
+          { name: "My NGOs", href: "/dashboard/vol/myngos" },
         ]}
       />
 
+      {/* Main Content */}
       <div className="flex-1 ml-64">
-        <NgoHeroSection
-          textPart1="Be the Change"
-          textPart2="You Wish to See"
-          description="Empower communities by volunteering your time and skills. Connect with NGOs and make a lasting impact on the lives of those in need."
-          imageLink={ngoDashboardHero}
-        />
-
         <div className="p-6">
           {loading ? (
             <div className="text-center text-gray-600 text-xl">Loading NGOs...</div>
-          ) : activeSection === "discover" ? (
-            <Discover
-              ngos={ngos}
-              setSelectedNGO={(ngo) => {
-                setSelectedNGO(ngo);
-                setActiveSection("associate");
-              }}
-            />
-          ) : activeSection === "associate" && selectedNGO ? (
-            <NGOAssociate ngo={selectedNGO} />
-          ) : null}
+          ) : (
+            <Routes>
+              {/* Default Route: Redirect to Discover */}
+              <Route path="/" element={<Navigate to="discover" replace />} />
+
+              {/* Discover Route */}
+              <Route
+                path="discover"
+                element={
+                  <Discover ngos={ngos} setSelectedNGO={(ngo) => setSelectedNGO(ngo)} />
+                }
+              />
+
+              {/* Settings Route */}
+              <Route path="settings" element={<Settings />} />
+
+              {/* My NGOs Route */}
+              <Route
+                path="myngos"
+                element={<MyNGOs ngos={ngos} selectedNGO={selectedNGO} />}
+              />
+
+              {/* NGO Associate Route */}
+              <Route
+                path="associate"
+                element={<NGOAssociate ngo={selectedNGO} />}
+              />
+            </Routes>
+          )}
         </div>
       </div>
     </div>

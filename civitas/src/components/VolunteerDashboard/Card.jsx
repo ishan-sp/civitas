@@ -14,13 +14,14 @@ export default function Card({ ngo }) {
     linkedin,
     youtube,
     typeOfNGO,
+    id, // Assuming `id` is the unique identifier for the NGO
   } = ngo;
 
   // Create an object for social media links for easy mapping
   const socials = { instagram, facebook, linkedin, youtube };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 max-w-md flex flex-col justify-between hover:shadow-xl transition-shadow min-h-[400px]"> {/* Reduced min-height */}
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 max-w-md flex flex-col justify-between hover:shadow-xl transition-shadow min-h-[400px]">
       {/* Header */}
       <div className="mb-4">
         <div className="flex justify-between items-start">
@@ -90,7 +91,7 @@ export default function Card({ ngo }) {
       {/* Association Link */}
       <div className="mt-4">
         <Link
-          to="/dashboard/vol" // Use the correct route here
+          to={`/dashboard/vol/associate?id=${id}`} // Dynamically generate the link with the NGO ID
           className="text-black bg-yellow-400 hover:bg-blue-700 px-4 py-2 rounded-lg text-center w-full block text-sm font-medium"
         >
           View details
