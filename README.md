@@ -40,7 +40,7 @@ Civitas serves as a centralized platform that bridges the critical gap between N
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 19, React Router, TailwindCSS
-- **Backend**: Firebase (Authentication, Firestore, Storage)
+- **Backend**: Firebase (Authentication, Firestore, Storage), FASTAPI (For Client-Server Interactions)
 - **Build Tools**: Vite
 - **Styling**: TailwindCSS, React Icons
 - **State Management**: React Hooks
@@ -170,3 +170,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Firebase](https://firebase.google.com/)
 - [Vite](https://vitejs.dev/)
 - [TailwindCSS](https://tailwindcss.com/)
+- [FASTAPI](https://fastapi.tiangolo.com/)
