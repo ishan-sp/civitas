@@ -244,11 +244,13 @@ async def login(request: Request, decoded_token: dict = Depends(verify_firebase_
     
 @app.get ("/user-profile")
 async def getProfile(decoded_token: dict = Depends(verify_firebase_token)):
+    print (decoded_token)
     uid = decoded_token["uid"]
     collections = ["Student", "Volunteer", "NGO"]
     for collection in collections :
         user_doc = db.collection(collection).document(uid).get()
         if user_doc.exists:
+            print (user_doc.to_dict())
             return user_doc.to_dict()
     raise HTTPException(status_code=404, detail="User not found")
 
@@ -294,40 +296,6 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
     if os.path.exists(student_answer_file):
         os.remove(student_answer_file)
     return results
-
-
-@app.get("/get-vol-profile")
-async def get_volunteer_profile(volunteer_id: str):
-    try:
-        print(f"Querying Firestore for document ID: {volunteer_id}")
-        
-        # Query the Firestore database for the volunteer document
-        volunteer_ref = db.collection("Volunteer").document(volunteer_id)
-        volunteer_doc = volunteer_ref.get()
-
-        if not volunteer_doc.exists:
-            print(f"Document with ID {volunteer_id} not found in Volunteer collection.")
-            raise HTTPException(status_code=404, detail="Volunteer not found")
-
-        # Extract volunteer data
-        volunteer_data = volunteer_doc.to_dict()
-        print(f"Volunteer data: {volunteer_data}")
-
-        # Handle file fields (e.g., resume)
-        if "resume" in volunteer_data:
-            resume_path = volunteer_data["resume"]
-            blob = bucket.blob(resume_path)
-            if blob.exists():
-                volunteer_data["resume"] = blob.public_url
-            else:
-                volunteer_data["resume"] = None
-
-        return {"status": "success", "data": volunteer_data}
-
-    except Exception as e:
-        print(f"Error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 def main():
     import uvicorn

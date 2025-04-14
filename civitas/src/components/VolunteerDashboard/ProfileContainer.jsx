@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const ProfileContainer = ({ profileData }) => {
-  const [editableData, setEditableData] = useState(profileData);
+  const [editableData, setEditableData] = useState(null);
   const [editingField, setEditingField] = useState(null);
+
+  // Update local state when profileData is received
+  useEffect(() => {
+    if (profileData) {
+      setEditableData(profileData);
+    }
+  }, [profileData]);
 
   const handleEdit = (fieldName) => {
     setEditingField(fieldName);
@@ -10,16 +17,21 @@ const ProfileContainer = ({ profileData }) => {
 
   const handleSave = (fieldName) => {
     console.log(`Updated ${fieldName}:`, editableData[fieldName]);
-    // Send the updated value to the backend (e.g., PATCH request)
+    // Ideally: send updated data to backend here
     setEditingField(null);
   };
 
   const handleInputChange = (fieldName, value) => {
-    setEditableData({
-      ...editableData,
+    setEditableData((prevData) => ({
+      ...prevData,
       [fieldName]: value,
-    });
+    }));
   };
+
+  // 🔐 Guard: only render once data is available
+  if (!editableData) {
+    return <div className="text-center text-gray-600">Loading profile...</div>;
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-2xl p-8">
