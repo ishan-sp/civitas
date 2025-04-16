@@ -358,37 +358,3 @@ Q<ID>:
         results["summary"]["percentage_score"] = 0
     
     return results
-
-#def main():
-#    try:
-#        logger.info("Starting grading process...")
-#        
-#        # Read files
-#        logger.info("Reading input files...")
-#        teacher_txt = read_txt_as_block("answer_key.txt")
-#        student_txt = read_txt_as_block("student_answers.txt")
-#        
-#        logger.info(f"Teacher answer key length: {len(teacher_txt)} characters")
-#        logger.info(f"Student answers length: {len(student_txt)} characters")
-#        
-#        # Grade the answers
-#        logger.info("Starting grading process...")
-#        results = grade_answers(teacher_txt, student_txt)
-#        
-#        # Output results
-#        print("\n==== GRADING RESULTS ====\n")
-#        print(json.dumps(results, indent=2))
-#        print("\n========================\n")
-#        
-#        # Save results to JSON file
-#        logger.info("Saving results to JSON file...")
-#        with open("grading_results.json", "w", encoding="utf-8") as f:
-#            json.dump(results, f, indent=2)
-#        logger.info("Grading results saved to grading_results.json")
-#        
-#    except Exception as e:
-#        logger.error(f"An error occurred: {str(e)}", exc_info=True)
-#        raise
-#
-#if __name__ == "__main__":
-#    main()
