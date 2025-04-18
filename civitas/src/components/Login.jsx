@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import Students from "../assets/images/Students.png";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword,onAuthStateChanged,setPersistence,browserLocalPersistence} from "firebase/auth";
+import { signInWithEmailAndPassword,onAuthStateChanged,setPersistence,browserLocalPersistence, signOut} from "firebase/auth";
 import { auth } from "../firebase"; // Use useNavigate instead of useHistory
 
 export const Login = () => {
@@ -39,6 +39,7 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      await signOut(auth);
       await setPersistence(auth, browserLocalPersistence);
       const userCredential = await signInWithEmailAndPassword(
         auth,
