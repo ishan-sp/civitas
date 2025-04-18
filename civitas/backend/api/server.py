@@ -1,6 +1,7 @@
 import os
 import json
 import firebase_admin
+import time
 from pydantic import BaseModel
 import main as main
 from main import read_txt_as_block, grade_answers
@@ -35,7 +36,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./lively-oxide-453105-k9-3c99f8bc8007.json"
 client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
@@ -207,14 +208,45 @@ async def volunteer_filter (data: VolunteerFilter):
 
 def verify_firebase_token(request: Request):
     auth_header = request.headers.get("Authorization")
+    print("Authorization Header:", auth_header)  # Debugging
+
     if not auth_header:
         raise HTTPException(status_code=401, detail="Missing Authorization header")
+
     try:
+        # Extract the token from the Authorization header
         id_token = auth_header.split("Bearer ")[1]
-        decoded_token = auth.verify_id_token(id_token)
+
+        # Verify the token with a small allowance for clock skew
+        decoded_token = auth.verify_id_token(id_token, clock_skew_seconds=5)
+        print("Decoded Token:", decoded_token)  # Debugging
+
         return decoded_token
-    except Exception as e:
+
+    except ValueError:
+        # Handle malformed Authorization header
+        raise HTTPException(status_code=401, detail="Malformed Authorization header")
+
+    except firebase_admin.auth.ExpiredIdTokenError:
+        # Handle expired tokens
+        raise HTTPException(status_code=401, detail="Expired token")
+
+    except firebase_admin.auth.InvalidIdTokenError:
+        # Handle invalid tokens
         raise HTTPException(status_code=401, detail="Invalid token")
+
+    except firebase_admin.auth.RevokedIdTokenError:
+        # Handle revoked tokens
+        raise HTTPException(status_code=401, detail="Revoked token")
+
+    except firebase_admin.auth.CertificateFetchError:
+        # Handle issues fetching public key certificates
+        raise HTTPException(status_code=500, detail="Failed to fetch public key certificates")
+
+    except Exception as e:
+        # Catch any other exceptions
+        print("Token Verification Error:", e)  # Debugging
+        raise HTTPException(status_code=401, detail=f"Token verification error: {str(e)}")
 
 @app.post ("/login")
 async def login(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
