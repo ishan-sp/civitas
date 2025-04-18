@@ -17,38 +17,33 @@ export const Login = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const idToken = await user.getIdToken();
-        const response = await fetch("http://localhost:3000/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
-        const data = await response.json();
-
-        //if (data.type === "NGO") navigate("/dashboard/ngo");
-        if (data.type === "Student") navigate("/dashboard/stud");
-        else if (data.type === "Volunteer") navigate("/dashboard/vol");
+        try {
+          // Only fetch user data if not already logged in
+          const idToken = await user.getIdToken(true); // Force refresh the token
+          console.log("ID Token:", idToken);
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+        }
       }
     });
-
-    return () => unsubscribe();
-  }, [navigate]);
+  
+    return () => unsubscribe(); // Cleanup listener
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await signOut(auth);
-      await setPersistence(auth, browserLocalPersistence);
+      // Sign in the user
       const userCredential = await signInWithEmailAndPassword(
         auth,
         formData.email,
         formData.password
       );
-
-      const idToken = await userCredential.user.getIdToken();
-
+  
+      // Get the ID token
+      const idToken = await userCredential.user.getIdToken(true); // Force refresh
+  
+      // Send the token to the backend
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: {
@@ -56,15 +51,27 @@ export const Login = () => {
           Authorization: `Bearer ${idToken}`,
         },
       });
-
+  
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+  
       const data = await response.json();
-      console.log("Login success", data);
-      if (data.type === "NGO") navigate("/dashboard/ngo");
-      else if (data.type === "Student") navigate("/dashboard/stud");
-      else if (data.type === "Volunteer") navigate("/dashboard/vol");
+      console.log("Login success:", data);
+  
+      // Redirect to the appropriate dashboard based on user type
+      if (data.type === "NGO") {
+        navigate("/dashboard/ngo");
+      } else if (data.type === "Student") {
+        navigate("/dashboard/stud");
+      } else if (data.type === "Volunteer") {
+        navigate("/dashboard/vol");
+      } else {
+        throw new Error("Unknown user type");
+      }
     } catch (err) {
       console.error("Login error:", err);
-      alert("Login failed. Check credentials or role.");
+      alert("Login failed. Please check your credentials.");
     }
   };
 
