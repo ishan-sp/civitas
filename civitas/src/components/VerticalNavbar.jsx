@@ -9,33 +9,38 @@ function VerticalNavbar({ links = [] }) {
   const handleLogout = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
+  
     try {
-      if (user){
+      if (user) {
         const idToken = await user.getIdToken();
-        const response = await fetch("http://localhost:3000/logout", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-            "Content-Type": "application/json"
+  
+        try {
+          const response = await fetch("http://localhost:3000/logout", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (!response.ok) {
+            console.warn("Backend logout failed (continuing anyway)");
+          }
+        } catch (fetchErr) {
+          console.warn("Logout fetch error:", fetchErr);
         }
-        });
-
-      if (!response.ok) {
-        throw new Error("Failed to log out");
       }
-    }
-
-    await signOut(auth);
-
-      // Clear any local storage or authentication tokens if necessary
+  
+      await signOut(auth);
       localStorage.removeItem("token");
-
-      // Redirect to the login page or home page
       navigate("/login");
+  
     } catch (err) {
       console.error("Logout error:", err);
+      navigate("/login");
     }
   };
+  
 
   return (
     <div className="fixed top-0 left-0 h-full w-64 bg-[#FCF8F1] shadow-lg overflow-y-auto">
