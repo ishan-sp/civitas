@@ -338,28 +338,25 @@ async def joinNgo(request: Request, decoded_token: dict = Depends(verify_firebas
 
     ngo_collection = db.collection("NGO").document(ngo_id)
     volunteer_collection = db.collection("Volunteer").document(volunteer_id)
-
-    # Add volunteer to NGO's list
+    # Add NGO to volunteer's list
     try:
         volunteer_collection.update({
-            "ngoMemberShip": firestore.ArrayUnion([ngo_id])
+            "Pending": firestore.ArrayUnion([ngo_id])
         })
     except Exception:
         volunteer_collection.set({
-            "ngoMemberShip": [ngo_id]
+            "Pending": [ngo_id]
         })
-
-    # Add NGO to volunteer's list
     try:
         ngo_collection.update({
-            "Volunteers": firestore.ArrayUnion([volunteer_id])
+            "Pending": firestore.ArrayUnion([volunteer_id])
         })
     except Exception:
         ngo_collection.set({
-            "Volunteers": [volunteer_id]
+            "Pending": [volunteer_id]
         })
 
-    return {"message": "Membership established successfully"}
+    return {"message": "Membership request submitted successfully. Please check the MyNGOs tab for updates"}
 
 @app.get ("/my-ngos")
 async def getMyNgos (decoded_token : dict = Depends (verify_firebase_token)):
@@ -368,10 +365,6 @@ async def getMyNgos (decoded_token : dict = Depends (verify_firebase_token)):
     volunteer_data = (volunteer_ngos.to_dict()).get("ngoMemberShip", [])
     myNgos = [(db.collection ("NGO").document(id).get()).to_dict() for id in volunteer_data]
     return {"result" : myNgos}
-
-
-
-
 
 def main():
     import uvicorn
