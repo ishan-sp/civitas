@@ -18,6 +18,7 @@ const VOLDash = () => {
       try {
         const res = await fetch("http://localhost:3000/api/ngos");
         const data = await res.json();
+        console.log(data);
         setNgos(data.result || []);
       } catch (err) {
         console.error("Error fetching NGOs:", err);

@@ -1,0 +1,5 @@
+Q1 (10 marks):
+Biohazards include bacteria, viruses, fungi, and biological toxins that can harm humans. They can spread infections like TB, HIV, or COVID-19. Exposure to biohazards may happen in labs, hospitals, or agriculture. They pose risks like disease outbreaks and long-term health damage. Proper handling, use of PPE, and strict biosafety protocols are essential to minimize these risks and protect public health.
+
+Q2 (10 marks):
+Biosafety Level II Class B2 cabinets are used to handle moderate-risk pathogens. These cabinets provide protection to personnel, the environment, and the product. Air is drawn through HEPA filters, and 100% of it is exhausted outside to avoid contamination. A neat diagram should show the airflow direction, HEPA filter location, and exhaust system. These cabinets are common in clinical labs and diagnostic centers.

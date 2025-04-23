@@ -327,39 +327,41 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
         os.remove(student_answer_file)
     return results
 
-@app.post ("/join-ngo")
-async def joinNgo (request : Request, decoded_token : dict = Depends (verify_firebase_token)):
-    ngo_data = await request.json ()
+@app.post("/join-ngo")
+async def joinNgo(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
+    ngo_data = await request.json()
+    
+    if "ngoId" not in ngo_data or not isinstance(ngo_data["ngoId"], str):
+        return {"error": "Invalid ngoId. It must be a string."}
+
     volunteer_id = decoded_token["uid"]
     ngo_id = ngo_data["ngoId"]
+
     ngo_collection = db.collection("NGO").document(ngo_id)
     volunteer_collection = db.collection("Volunteer").document(volunteer_id)
-    try:
-        volunteer_collection.update(
-            {
-                "ngoMemberShip" : firestore.ArrayUnion([ngo_id])
-            }     
-        )
-    except Exception as e:
-         volunteer_collection.set(
-            {
-                "ngoMemberShip" : [ngo_id]
-            }     
-        )
 
+    # Add volunteer to NGO's list
     try:
-        ngo_collection.update(
-            {
-                "Volunteers" : firestore.ArrayUnion([volunteer_id])
-            }     
-        )
-    except Exception as e:
-        ngo_collection.set(
-            {
-                "Volunteers" : [volunteer_id]
-            }     
-        )
-    return {"message" : "Membership established succesfully"}
+        volunteer_collection.update({
+            "ngoMemberShip": firestore.ArrayUnion([ngo_id])
+        })
+    except Exception:
+        volunteer_collection.set({
+            "ngoMemberShip": [ngo_id]
+        })
+
+    # Add NGO to volunteer's list
+    try:
+        ngo_collection.update({
+            "Volunteers": firestore.ArrayUnion([volunteer_id])
+        })
+    except Exception:
+        ngo_collection.set({
+            "Volunteers": [volunteer_id]
+        })
+
+    return {"message": "Membership established successfully"}
+
 
 
 def main():
