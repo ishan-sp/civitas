@@ -36,7 +36,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./lively-oxide-453105-k9-3c99f8bc8007.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
 client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
@@ -326,6 +326,25 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
     if os.path.exists(student_answer_file):
         os.remove(student_answer_file)
     return results
+
+@app.post ("/join-ngo")
+async def joinNgo (request : Request, decoded_token : dict = Depends (verify_firebase_token)):
+    ngo_data = await request.json ()
+    volunteer_id = decoded_token["uid"]
+    ngo_id = ngo_data["ngoId"]
+    ngo_collection = db.collection("NGO").document(ngo_id)
+    volunteer_collection = db.collection("Volunteer").document(ngo_id)
+    volunteer_collection.set(
+        {
+            "ngoMemberShip" : firestore.ArrayUnion(ngo_id)
+        }     
+    )
+    ngo_collection.set(
+        {
+            "volunteersApplied" : firestore.ArrayUnion(volunteer_id)
+        }     
+    )
+
 
 def main():
     import uvicorn
