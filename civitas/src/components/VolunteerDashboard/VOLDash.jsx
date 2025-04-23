@@ -5,20 +5,22 @@ import Discover from "./Discover";
 import Settings from "./Settings";
 import NGOAssociate from "./NGOAssociate";
 import MyNGOs from "./MyNGOs";
+import { getAuth } from "firebase/auth";
 
 const VOLDash = () => {
-  const [ngos, setNgos] = useState([]);
+  const [ngos, setNgos] = useState([]); // For Discover NGOs
+  const [myNgos, setMyNgos] = useState([]); // For My NGOs
   const [selectedNGO, setSelectedNGO] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
 
-  // Fetch NGO data from API
+  // Fetch NGOs for Discover
   useEffect(() => {
     const fetchNGOs = async () => {
       try {
         const res = await fetch("http://localhost:3000/api/ngos");
         const data = await res.json();
-        console.log(data);
+        console.log("Discover NGOs:", data);
         setNgos(data.result || []);
       } catch (err) {
         console.error("Error fetching NGOs:", err);
@@ -31,13 +33,53 @@ const VOLDash = () => {
   }, []);
 
   useEffect(() => {
+    const fetchMyNGOs = async () => {
+      try {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+  
+        if (!currentUser) {
+          console.warn("User is not logged in.");
+          return;
+        }
+  
+        const idToken = await currentUser.getIdToken(true); // Force token refresh
+        console.log("ID Token:", idToken);
+  
+        const res = await fetch("http://localhost:3000/my-ngos", {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+  
+        console.log("Response Status:", res.status);
+  
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Error Response:", errorText);
+          throw new Error("Failed to fetch My NGOs");
+        }
+  
+        const data = await res.json();
+        console.log("My NGOs:", data);
+        setMyNgos(data.result || []);
+      } catch (err) {
+        console.error("Error fetching My NGOs:", err);
+      }
+    };
+  
+    fetchMyNGOs();
+  }, []);
+
+
+  // Handle selected NGO based on URL query parameter
+  useEffect(() => {
     const id = searchParams.get("id");
     if (id && ngos.length > 0) {
       const foundNGO = ngos.find((ngo) => ngo.id.toString() === id); // toString to avoid type mismatch
       setSelectedNGO(foundNGO || null);
     }
   }, [searchParams, ngos]);
-  
 
   return (
     <div className="flex bg-[#FCF8F1] min-h-screen">
@@ -74,7 +116,7 @@ const VOLDash = () => {
               {/* My NGOs Route */}
               <Route
                 path="myngos"
-                element={<MyNGOs ngos={ngos} selectedNGO={selectedNGO} />}
+                element={<MyNGOs ngos={myNgos} selectedNGO={selectedNGO} />}
               />
 
               {/* NGO Associate Route */}
