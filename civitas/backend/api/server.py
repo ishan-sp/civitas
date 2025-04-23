@@ -36,7 +36,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./lively-oxide-453105-k9-3c99f8bc8007.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
 client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
@@ -361,6 +361,16 @@ async def joinNgo(request: Request, decoded_token: dict = Depends(verify_firebas
         })
 
     return {"message": "Membership established successfully"}
+
+@app.get ("my-ngos")
+async def getMyNgos (decoded_token : dict = Depends (verify_firebase_token)):
+    volunteer_id = decoded_token["uid"]
+    volunteer_ngos = db.collection ("Volunteer").document(volunteer_id).get()
+    volunteer_data = (volunteer_ngos.to_dict()).get("ngoMemberShip", [])
+    myNgos = [(db.collection ("NGO").document(id).get()).to_dict() for id in volunteer_data]
+    return myNgos
+
+
 
 
 
