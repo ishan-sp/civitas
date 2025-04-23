@@ -334,16 +334,32 @@ async def joinNgo (request : Request, decoded_token : dict = Depends (verify_fir
     ngo_id = ngo_data["ngoId"]
     ngo_collection = db.collection("NGO").document(ngo_id)
     volunteer_collection = db.collection("Volunteer").document(volunteer_id)
-    volunteer_collection.set(
-        {
-            "ngoMemberShip" : firestore.ArrayUnion(ngo_id)
-        }     
-    )
-    ngo_collection.set(
-        {
-            "volunteersApplied" : firestore.ArrayUnion(volunteer_id)
-        }     
-    )
+    try:
+        volunteer_collection.update(
+            {
+                "ngoMemberShip" : firestore.ArrayUnion([ngo_id])
+            }     
+        )
+    except Exception as e:
+         volunteer_collection.set(
+            {
+                "ngoMemberShip" : firestore.ArrayUnion([ngo_id])
+            }     
+        )
+
+    try:
+        ngo_collection.update(
+            {
+                "Volunteers" : firestore.ArrayUnion([volunteer_id])
+            }     
+        )
+    except Exception as e:
+        ngo_collection.set(
+            {
+                "Volunteers" : firestore.ArrayUnion([volunteer_id])
+            }     
+        )
+    return {"message" : "Membership established succesfully"}
 
 
 def main():
