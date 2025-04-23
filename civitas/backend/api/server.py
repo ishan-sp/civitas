@@ -330,8 +330,8 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
 @app.post ("/join-ngo")
 async def joinNgo (request : Request, decoded_token : dict = Depends (verify_firebase_token)):
     ngo_data = await request.json ()
-    volunteer_id = decoded_token["uid"]
-    ngo_id = ngo_data["ngoId"]
+    volunteer_id = [decoded_token["uid"]]
+    ngo_id = [ngo_data["ngoId"]]
     ngo_collection = db.collection("NGO").document(ngo_id)
     volunteer_collection = db.collection("Volunteer").document(volunteer_id)
     try:
@@ -343,7 +343,7 @@ async def joinNgo (request : Request, decoded_token : dict = Depends (verify_fir
     except Exception as e:
          volunteer_collection.set(
             {
-                "ngoMemberShip" : firestore.ArrayUnion([ngo_id])
+                "ngoMemberShip" : [ngo_id]
             }     
         )
 
@@ -356,7 +356,7 @@ async def joinNgo (request : Request, decoded_token : dict = Depends (verify_fir
     except Exception as e:
         ngo_collection.set(
             {
-                "Volunteers" : firestore.ArrayUnion([volunteer_id])
+                "Volunteers" : [volunteer_id]
             }     
         )
     return {"message" : "Membership established succesfully"}
