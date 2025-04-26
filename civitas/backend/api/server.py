@@ -36,7 +36,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./lively-oxide-453105-k9-3c99f8bc8007.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
 client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
@@ -358,13 +358,142 @@ async def joinNgo(request: Request, decoded_token: dict = Depends(verify_firebas
 
     return {"message": "Membership request submitted successfully. Please check the MyNGOs tab for updates"}
 
+@app.get ("/ngo/getPending")
+async def ngoGetPending (decoded_token: dict = Depends(verify_firebase_token)):
+    ngoId = decoded_token["uid"]
+    pendingReq = db.collection("NGO").document(ngoId).get()
+    if pendingReq.exists:
+        reqData = pendingReq.to_dict()
+        VolId = reqData.get("Pending", [])
+        if not VolId:
+            return {"result": "No pending volunteer requests"}
+
+        volunteer_refs = [db.collection("Volunteer").document(volId) for volId in VolId]
+        volunteers = db.get_all(volunteer_refs)
+        
+        PendingVolunteers = [vol.to_dict() for vol in volunteers if vol.exists]
+        
+        return {"result": PendingVolunteers}
+    else:
+        return {"result" : "No pending volunteer requests"}
+    
+@app.post ("/ngo/approveVolunteer")
+async def approveVolunteer(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
+    volData = await request.json()
+    if "volId" not in volData or not isinstance(volData["volId"], str):
+        return {"error": "Invalid volId. It must be a string."}
+    approvedVolId = volData["volId"]
+    ngoId = decoded_token["uid"]
+    approvedVol_ref = db.collection("Volunteer").document(approvedVolId)
+    ngo_ref = db.collection("NGO").document(ngoId)
+    try:
+        approvedVol_ref.update({
+            "ngoMemberShip": firestore.ArrayUnion([ngoId]),
+            "Pending" : firestore.ArrayRemove ([ngoId])
+        })
+    except Exception:
+        approvedVol_ref.set({
+            "ngoMemberShip": [ngoId],
+            "Pending" : []
+        })
+    try:
+        ngo_ref.update({
+            "myVolunteers": firestore.ArrayUnion([approvedVolId]),
+            "Pending" : firestore.ArrayRemove ([approvedVolId])
+        })
+    except Exception:
+        ngo_ref.set({
+            "myVolunteers": [approvedVolId],
+            "Pending" : []
+        })
+    return {"message":"Approved Volunteer Successfully"}
+
+@app.post ("/ngo/rejectVolunteer")
+async def rejectVolunteer(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
+    volData = await request.json()
+    if "volId" not in volData or not isinstance(volData["volId"], str):
+        return {"error": "Invalid volId. It must be a string."}
+    approvedVolId = volData["volId"]
+    ngoId = decoded_token["uid"]
+    approvedVol_ref = db.collection("Volunteer").document(approvedVolId)
+    ngo_ref = db.collection("NGO").document(ngoId)
+    try:
+        approvedVol_ref.update({
+            "Pending" : firestore.ArrayRemove ([ngoId])
+        })
+    except Exception:
+        approvedVol_ref.set({
+            "Pending" : []
+        })
+    try:
+        ngo_ref.update({
+            "Pending" : firestore.ArrayRemove ([approvedVolId])
+        })
+    except Exception:
+        ngo_ref.set({
+            "Pending" : []
+        })
+    return {"message":"Rejected Volunteer Successfully"}
+
+@app.get ("/vol/getPending")
+async def volGetPending (decoded_token: dict = Depends(verify_firebase_token)):
+    volId = decoded_token["uid"]
+    pendingReq = db.collection("Volunteer").document(volId).get()
+    if pendingReq.exists:
+        reqData = pendingReq.to_dict()
+        ngoId = reqData.get("Pending", [])
+        if not ngoId:
+            return {"result": "No pending ngo requests"}
+
+        ngo_refs = [db.collection("NGO").document(id) for id in ngoId]
+        ngos = db.get_all(ngo_refs)
+        
+        PendingNgos = [ngo.to_dict() for ngo in ngos if ngo.exists]
+        
+        return {"result": PendingNgos}
+    else:
+        return {"result" : "No pending NGO requests"}
+    
+@app.post ("/vol/cancelRequest")
+async def cancelRequest (request : Request, decoded_token: dict = Depends(verify_firebase_token)):
+    ngoData = await request.json()
+    if "ngoId" not in ngoData or not isinstance(ngoData["ngoId"], str):
+        return {"error": "Invalid ngoId. It must be a string."}
+    cancelledNgoId = ngoData["ngoId"]
+    volId = decoded_token["uid"]
+    cancelledNgo_ref = db.collection("NGO").document(cancelledNgoId)
+    vol_ref = db.collection("Volunteer").document(volId)
+    try:
+        cancelledNgo_ref.update({
+            "Pending" : firestore.ArrayRemove ([volId])
+        })
+    except Exception:
+        cancelledNgo_ref.set({
+            "Pending" : []
+        }, merge = True)
+    try:
+        vol_ref.update({
+            "Pending" : firestore.ArrayRemove ([cancelledNgoId])
+        })
+    except Exception:
+        vol_ref.set({
+            "Pending" : []
+        }, merge = True)
+    return {"message":"Cancelled Request Successfully"}
+
+    
+    
+
+
 @app.get ("/my-ngos")
 async def getMyNgos (decoded_token : dict = Depends (verify_firebase_token)):
     volunteer_id = decoded_token["uid"]
     volunteer_ngos = db.collection ("Volunteer").document(volunteer_id).get()
     volunteer_data = (volunteer_ngos.to_dict()).get("ngoMemberShip", [])
-    myNgos = [(db.collection ("NGO").document(id).get()).to_dict() for id in volunteer_data]
-    return {"result" : myNgos}
+    myNgo_refs = [db.collection ("NGO").document(id) for id in volunteer_data]
+    myNgos = db.get_all(myNgo_refs)
+    result = [ngo.to_dict() for ngo in myNgos]
+    return {"result" : result}
 
 def main():
     import uvicorn
