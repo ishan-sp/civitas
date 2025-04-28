@@ -250,16 +250,11 @@ def verify_firebase_token(request: Request):
 @app.post ("/login")
 async def login(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
     uid = decoded_token["uid"]
-    user_doc = db.collection("Student").document(uid).get()
-    if not user_doc.exists:
-        user_doc = db.collection("NGO").document(uid).get()
-    if not user_doc.exists:
-        user_doc = db.collection("Volunteer").document(uid).get()
-    if user_doc.exists:
-        user_data = user_doc.to_dict()
-        return user_data
-    else:
-        raise HTTPException(status_code=404, detail="User not found")
+    collection = ["Student", "Volunteer", "NGO"]
+    doc_refs = [db.collection(item).document(uid) for item in collection]
+    cur_user = db.get_all(doc_refs)
+    result = [user.to_dict() for user in cur_user if user.exists]
+    return result[0]
     
 @app.post ("/logout")
 async def logout (decoded_token: dict = Depends(verify_firebase_token)):
