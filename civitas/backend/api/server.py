@@ -479,6 +479,7 @@ async def ngoGetPending(decoded_token: dict = Depends(verify_firebase_token)):
                     "id": vol.id,
                     "email": v.get("email"),
                     "fullName": v.get("fullName"),
+                    "city" : v.get("city"),
                 })
 
         return {"result": pending_basic}
