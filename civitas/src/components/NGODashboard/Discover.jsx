@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import SearchBar from "./Searchbar";
 import SchoolCard from "./Card";
+import NgoHeroSection from "./Hero";
+import ngoDashboardHero from "../../assets/images/ngoDashboardHero.jpg";
 
 const Discover = () => {
   const schools = [
@@ -16,6 +18,15 @@ const Discover = () => {
 
   return (
     <>
+      {/* Hero Section */}
+      <NgoHeroSection
+        textPart1="Together We Can"
+        textPart2="Make a Difference"
+        description="Join us in our mission to help children in need by providing an accessible platform for them to reach you. Get connected with volunteers and expand your presence."
+        imageLink={ngoDashboardHero}
+      />
+
+      {/* Discover Section */}
       <section id="discover-section" className="container mx-auto px-6 lg:px-12 pt-20 pb-4">
         <SearchBar
           data={schools}
@@ -27,7 +38,8 @@ const Discover = () => {
                 school.location.toLowerCase().includes(query.toLowerCase())
               )
             );
-          setFilteredSchools(filtered); }}
+            setFilteredSchools(filtered);
+          }}
         />
         <section id="associate-section" className="container mx-auto px-6 lg:px-12 py-1">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">

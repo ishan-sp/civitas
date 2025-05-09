@@ -1,41 +1,36 @@
-import React, { useState } from "react";
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import VerticalNavbar from "../VerticalNavbar";
+import TopNavbar from "./TopNavbar";
 import Discover from "./Discover";
 import Settings from "./Settings";
-import ngoDashboardHero from "../../assets/images/ngoDashboardHero.jpg";
-import NgoHeroSection from "./Hero";
+import Volunteers from "./Volunteers";
+import VolunteerDetails from "./VolunteerDetails";
 
 const NGODash = () => {
-  const [activeSection, setActiveSection] = useState("discover");
-
   return (
-    <div className="flex bg-[#FCF8F1] min-h-screen">
-  {/* Vertical Navbar */}
-  <VerticalNavbar
-    links={[
-      { name: "Discover", onClick: () => setActiveSection("discover") },
-      { name: "Settings", onClick: () => setActiveSection("settings") },
-    ]}
-  />
+    <div className="flex bg-[#F7F9FC] min-h-screen">
+      <VerticalNavbar
+        links={[
+          { name: "Discover", href: "/dashboard/ngo/discover" },
+          { name: "Volunteers", href: "/dashboard/ngo/volunteers" },
+          { name: "Settings", href: "/dashboard/ngo/settings" },
+        ]}
+      />
 
-  {/* Main Content */}
-  <div className="flex-1 ml-64">
-    {/* ✅ Hero section placed here */}
-    <NgoHeroSection
-      textPart1="Together We Can"
-      textPart2="Make a Difference"
-      description="Join us in our mission to help children in need by providing an accessible platform for them to reach you. Get connected with volunteers and expand your presence."
-      imageLink={ngoDashboardHero}
-    />
-
-    {/* Actual Section */}
-    <div className="p-6">
-      {activeSection === "discover" && <Discover />}
-      {activeSection === "settings" && <Settings />}
+      <div className="flex-1 ml-64">
+        <TopNavbar />
+        <main className="pt-20 px-6">
+          <Routes>
+            <Route path="/" element={<Navigate to="discover" replace />} />
+            <Route path="discover" element={<Discover />} />
+            <Route path="volunteers/*" element={<Volunteers />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="volunteers/details/:id" element={<VolunteerDetails />} />
+          </Routes>
+        </main>
+      </div>
     </div>
-  </div>
-</div>
-
   );
 };
 
