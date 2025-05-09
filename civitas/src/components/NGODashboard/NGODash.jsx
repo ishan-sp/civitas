@@ -5,6 +5,7 @@ import TopNavbar from "./TopNavbar";
 import Discover from "./Discover";
 import Settings from "./Settings";
 import Volunteers from "./Volunteers";
+import ApplicantDetails from "./ApplicantDetails";
 import VolunteerDetails from "./VolunteerDetails";
 
 const NGODash = () => {
@@ -26,7 +27,8 @@ const NGODash = () => {
             <Route path="discover" element={<Discover />} />
             <Route path="volunteers/*" element={<Volunteers />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="volunteers/details/:id" element={<VolunteerDetails />} />
+            <Route path="volunteers/applicantdetails/:id" element={<ApplicantDetails />} />
+            <Route path="volunteers/volunteerdetails/:id" element={<VolunteerDetails/>} />
           </Routes>
         </main>
       </div>

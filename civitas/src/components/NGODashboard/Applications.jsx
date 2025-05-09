@@ -36,70 +36,30 @@ const Applications = () => {
     fetchApplications();
   }, []);
 
-  const handleApprove = async (volId) => {
-    try {
-      const idToken = await getAuth().currentUser.getIdToken(true);
-      const res = await fetch("http://localhost:3000/ngo/approveVolunteer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ volId }),
-      });
-      if (res.ok) fetchApplications();
-    } catch (err) {
-      console.error("Error approving volunteer:", err);
-    }
-  };
-
-  const handleReject = async (volId) => {
-    try {
-      const idToken = await getAuth().currentUser.getIdToken(true);
-      const res = await fetch("http://localhost:3000/ngo/rejectVolunteer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ volId }),
-      });
-      if (res.ok) fetchApplications();
-    } catch (err) {
-      console.error("Error rejecting volunteer:", err);
-    }
-  };
-
   return (
     <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[75vh]">
-      <h2 className="text-2xl font-bold mb-4">Pending Applications</h2>
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Pending Applications</h2>
       {loading ? (
         <p>Loading...</p>
       ) : applications.length === 0 ? (
-        <p>No pending applications</p>
+        <p className="text-gray-600">No pending applications</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {applications.map((app) => (
-            <div key={app.id} className="border border-gray-200 rounded-lg p-4 shadow hover:shadow-md transition">
-              <h3 className="text-xl font-semibold">{app.fullName || "Unknown Volunteer"}</h3>
+            <div
+              key={app.id}
+              className="border border-gray-200 rounded-lg p-6 shadow hover:shadow-lg transition"
+            >
+              <h3 className="text-xl font-semibold text-gray-800">
+                {app.fullName || "Unknown Volunteer"}
+              </h3>
               <p className="text-gray-600">{app.email}</p>
-              <div className="mt-3 flex gap-4">
-                <button
-                  onClick={() => handleApprove(app.id)}
-                  className="px-4 py-2 bg-green-500 text-white rounded"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleReject(app.id)}
-                  className="px-4 py-2 bg-red-500 text-white rounded"
-                >
-                  Reject
-                </button>
-              </div>
+              <p className="text-gray-600 mt-2">
+                <strong>City:</strong> {app.city || "N/A"}
+              </p>
               <Link
-                to={`/dashboard/ngo/volunteers/details/${app.id}`}
-                className="block mt-4 text-blue-600 underline text-sm"
+                to={`/dashboard/ngo/volunteers/applicantdetails/${app.id}`}
+                className="mt-4 inline-block px-4 py-2 bg-black text-white rounded-lg text-center hover:bg-gray-800 transition"
               >
                 View Full Details
               </Link>

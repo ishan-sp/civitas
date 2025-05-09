@@ -1,50 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const CurrentVolunteers = () => {
   const [volunteers, setVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchVolunteers = async () => {
     setLoading(true);
     try {
-      // Get the currently authenticated user
       const auth = getAuth();
       const currentUser = auth.currentUser;
+      if (!currentUser) return;
 
-      if (!currentUser) {
-        console.warn("User is not logged in.");
-        return;
-      }
-
-      // Retrieve the ID token
-      const idToken = await currentUser.getIdToken(true); // Force token refresh
-      console.log("ID Token:", idToken);
-
-      // Fetch current volunteers
+      const idToken = await currentUser.getIdToken(true);
       const res = await fetch("http://localhost:3000/ngo/my-volunteers", {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
+        headers: { Authorization: `Bearer ${idToken}` },
       });
 
-      console.log("Response Status:", res.status);
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Error Response:", errorText);
-        throw new Error("Failed to fetch current volunteers");
-      }
-
       const data = await res.json();
-      console.log("Fetched Volunteers:", data);
-
-      // Check if data.result is an array
       if (Array.isArray(data.result)) {
         setVolunteers(data.result);
       } else {
-        console.warn("Unexpected response format:", data.result);
-        setVolunteers([]); // Set to an empty array if result is not an array
+        setVolunteers([]);
       }
     } catch (err) {
       console.error("Error fetching volunteers:", err);
@@ -58,23 +37,32 @@ const CurrentVolunteers = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Current Volunteers</h2>
+    <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[75vh]">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Current Volunteers</h2>
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-gray-600">Loading...</p>
       ) : volunteers.length === 0 ? (
-        <p>No current volunteers</p>
+        <p className="text-gray-600">No current volunteers</p>
       ) : (
-        <div className="space-y-4">
-          {volunteers.map((volunteer, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {volunteers.map((volunteer) => (
             <div
-              key={index}
-              className="p-4 border border-gray-300 rounded-lg shadow-sm"
+              key={volunteer._id}
+              className="border border-gray-200 rounded-lg p-6 shadow hover:shadow-lg transition"
             >
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-xl font-semibold text-gray-800">
                 {volunteer.fullName || "Unknown Volunteer"}
               </h3>
-              <p>{volunteer.email || "No email provided"}</p>
+              <p className="text-gray-600">{volunteer.email || "No email provided"}</p>
+              <p className="text-gray-600 mt-2">
+                <strong>City:</strong> {volunteer.city || "N/A"}
+              </p>
+              <button
+                onClick={() => navigate(`/dashboard/ngo/volunteers/volunteerdetails/${volunteer._id}`)}
+                className="mt-4 inline-block px-4 py-2 bg-black text-white rounded-lg text-center hover:bg-gray-800 transition"
+              >
+                View Full Details
+              </button>
             </div>
           ))}
         </div>
