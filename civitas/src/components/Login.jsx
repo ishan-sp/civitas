@@ -17,16 +17,17 @@ export const Login = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        console.log("User is authenticated:", user); // Debugging
         try {
-          // Only fetch user data if not already logged in
           const idToken = await user.getIdToken(true); // Force refresh the token
-          console.log("ID Token:", idToken);
+          console.log("ID Token:", idToken); // Debugging
         } catch (err) {
           console.error("Error fetching user data:", err);
         }
+      } else {
+        console.warn("No user is authenticated."); // Debugging
       }
     });
-  
     return () => unsubscribe(); // Cleanup listener
   }, []);
 
@@ -40,8 +41,21 @@ export const Login = () => {
         formData.password
       );
   
+      // Check if the user is authenticated
+      const user = userCredential.user;
+      if (!user) {
+        throw new Error("User authentication failed.");
+      }
+  
+      console.log("User authenticated:", user); // Debugging
+  
       // Get the ID token
-      const idToken = await userCredential.user.getIdToken(true); // Force refresh
+      const idToken = await user.getIdToken(true); // Force refresh
+      if (!idToken) {
+        throw new Error("Failed to retrieve ID token.");
+      }
+  
+      console.log("ID Token:", idToken); // Debugging
   
       // Send the token to the backend
       const response = await fetch("http://localhost:3000/login", {

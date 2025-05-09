@@ -36,7 +36,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./lively-oxide-453105-k9-3c99f8bc8007.json"
 client = vision.ImageAnnotatorClient()
 
 app = FastAPI()
@@ -353,25 +353,51 @@ async def joinNgo(request: Request, decoded_token: dict = Depends(verify_firebas
 
     return {"message": "Membership request submitted successfully. Please check the MyNGOs tab for updates"}
 
-@app.get ("/ngo/getPending")
-async def ngoGetPending (decoded_token: dict = Depends(verify_firebase_token)):
-    ngoId = decoded_token["uid"]
-    pendingReq = db.collection("NGO").document(ngoId).get()
-    if pendingReq.exists:
-        reqData = pendingReq.to_dict()
-        VolId = reqData.get("Pending", [])
-        if not VolId:
-            return {"result": "No pending volunteer requests"}
-
-        volunteer_refs = [db.collection("Volunteer").document(volId) for volId in VolId]
-        volunteers = db.get_all(volunteer_refs)
-        
-        PendingVolunteers = [vol.to_dict() for vol in volunteers if vol.exists]
-        
-        return {"result": PendingVolunteers}
-    else:
-        return {"result" : "No pending volunteer requests"}
+@app.post("/api/volunteer")
+async def volunteer_filter(data: VolunteerFilter):
+    filterDict = data.dict()
     
+    # If we're querying by ID
+    if filterDict.get("id"):
+        doc_ref = db.collection("Volunteer").document(filterDict["id"])
+        doc = doc_ref.get()
+        if doc.exists:
+            return {"result": [doc.to_dict()]}
+        else:
+            return {"result": []}
+
+    # Otherwise, fallback to filters
+    firebasequery = db.collection("Volunteer")
+    reqFilters = [param for param in filterDict.keys() if filterDict[param] is not None]
+
+    for filter in reqFilters:
+        firebasequery = firebasequery.where(filter, "==", filterDict[filter])
+
+    result = firebasequery.stream()
+    docs = [doc.to_dict() for doc in result]
+    return {"result": docs}
+
+
+@app.get("/ngo/my-volunteers")
+async def getMyVolunteers(decoded_token: dict = Depends(verify_firebase_token)):
+    ngoId = decoded_token["uid"]
+    ngo_doc = db.collection("NGO").document(ngoId).get()
+
+    if ngo_doc.exists:
+        ngo_data = ngo_doc.to_dict()
+        volunteer_ids = ngo_data.get("myVolunteers", [])
+        if not volunteer_ids:
+            return {"result": "No current volunteers"}
+
+        volunteer_refs = [db.collection("Volunteer").document(vol_id) for vol_id in volunteer_ids]
+        volunteers = db.get_all(volunteer_refs)
+
+        current_volunteers = [vol.to_dict() for vol in volunteers if vol.exists]
+        return {"result": current_volunteers}
+    else:
+        return {"result": "No current volunteers"}
+
+
 @app.post ("/ngo/approveVolunteer")
 async def approveVolunteer(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
     volData = await request.json()
@@ -430,24 +456,35 @@ async def rejectVolunteer(request: Request, decoded_token: dict = Depends(verify
         })
     return {"message":"Rejected Volunteer Successfully"}
 
-@app.get ("/vol/getPending")
-async def volGetPending (decoded_token: dict = Depends(verify_firebase_token)):
-    volId = decoded_token["uid"]
-    pendingReq = db.collection("Volunteer").document(volId).get()
-    if pendingReq.exists:
-        reqData = pendingReq.to_dict()
-        ngoId = reqData.get("Pending", [])
-        if not ngoId:
-            return {"result": "No pending ngo requests"}
+@app.get("/ngo/getPending")
+async def ngoGetPending(decoded_token: dict = Depends(verify_firebase_token)):
+    ngoId = decoded_token["uid"]
+    ngo_doc = db.collection("NGO").document(ngoId).get()
 
-        ngo_refs = [db.collection("NGO").document(id) for id in ngoId]
-        ngos = db.get_all(ngo_refs)
-        
-        PendingNgos = [ngo.to_dict() for ngo in ngos if ngo.exists]
-        
-        return {"result": PendingNgos}
+    if ngo_doc.exists:
+        reqData = ngo_doc.to_dict()
+        VolIds = reqData.get("Pending", [])
+        if not VolIds:
+            return {"result": []}
+
+        volunteer_refs = [db.collection("Volunteer").document(vol_id) for vol_id in VolIds]
+        volunteers = db.get_all(volunteer_refs)
+
+        # Extract only basic details
+        pending_basic = []
+        for vol in volunteers:
+            if vol.exists:
+                v = vol.to_dict()
+                pending_basic.append({
+                    "id": vol.id,
+                    "email": v.get("email"),
+                    "fullName": v.get("fullName"),
+                })
+
+        return {"result": pending_basic}
     else:
-        return {"result" : "No pending NGO requests"}
+        return {"result": []}
+
     
 @app.post ("/vol/cancelRequest")
 async def cancelRequest (request : Request, decoded_token: dict = Depends(verify_firebase_token)):

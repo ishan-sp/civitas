@@ -1,0 +1,16 @@
+[2025-04-27 22:46:24] /login - Firebase time: 3.2811 seconds
+[2025-04-27 22:52:36] /login - Function called
+[2025-04-27 22:52:37] /login - Firebase time: 1.8038 seconds
+[2025-04-27 22:52:37] /login - Function exited, Total time: 1.8048 seconds
+[2025-04-27 22:52:52] /login - Function called
+[2025-04-27 22:52:54] /login - Firebase time: 1.8015 seconds
+[2025-04-27 22:52:54] /login - Function exited, Total time: 1.8015 seconds
+[2025-04-27 22:53:11] /login - Function called
+[2025-04-27 22:53:13] /login - Firebase time: 1.8889 seconds
+[2025-04-27 22:53:13] /login - Function exited, Total time: 1.8908 seconds
+[2025-04-27 22:54:18] /login - Function called
+[2025-04-27 22:54:21] /login - Firebase time: 3.3589 seconds
+[2025-04-27 22:54:21] /login - Function exited, Total time: 3.3622 seconds
+[2025-04-27 22:54:39] /login - Function called
+[2025-04-27 22:54:41] /login - Firebase time: 1.8405 seconds
+[2025-04-27 22:54:41] /login - Function exited, Total time: 1.8427 seconds
