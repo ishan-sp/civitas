@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Globe, MapPin, Users, Info, User, Link2 } from "lucide-react";
 
-export default function Card({ ngo }) {
+export default function Card({ ngo, link }) {
   const {
     ngoName,
     regionsOfOperation,
@@ -88,10 +88,10 @@ export default function Card({ ngo }) {
         )}
       </div>
 
-      {/* Association Link */}
+      {/* Link to NGO page */}
       <div className="mt-4">
         <Link
-          to={`/dashboard/vol/associate?id=${id}`} // Dynamically generate the link with the NGO ID
+          to={link}  // Using the passed link prop
           className="text-black bg-yellow-400 hover:bg-blue-700 px-4 py-2 rounded-lg text-center w-full block text-sm font-medium"
         >
           View details
