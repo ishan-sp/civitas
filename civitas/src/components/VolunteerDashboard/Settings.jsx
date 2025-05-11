@@ -118,74 +118,74 @@ const Settings = ({ user }) => {
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Volunteer Settings</h1>
-      <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-        {fields.map((field) => {
-          const value = profileData[field.name];
-          const isRequired = field.required;
+  <div className="p-6 bg-gray-100 min-h-screen">
+    <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Volunteer Settings</h1>
+    <div className="max-w-3xl mx-auto space-y-6 bg-white p-8 rounded-xl shadow-lg">
+      {fields.map((field) => {
+        const value = profileData[field.name];
+        const isRequired = field.required;
 
-          // Render based on field type
-          switch (field.type) {
-            case "text":
-            case "email":
-            case "tel":
-            case "number":
-              return (
-                <EditableField
-                  key={field.name}
-                  label={field.label}
-                  name={field.name}
-                  value={value}
-                  type={field.type}
-                  required={isRequired}
-                  onSave={handleSave}
-                />
-              );
+        switch (field.type) {
+          case "text":
+          case "email":
+          case "tel":
+          case "number":
+            return (
+              <EditableField
+                key={field.name}
+                label={field.label}
+                name={field.name}
+                value={value}
+                type={field.type}
+                required={isRequired}
+                onSave={handleSave}
+              />
+            );
 
-            case "dropdown":
-              return (
-                <DropdownField
-                  key={field.name}
-                  label={field.label}
-                  name={field.name}
-                  value={value}
-                  options={dropdownOptions[field.name] || []}
-                  required={isRequired}
-                  onSave={handleSave}
-                />
-              );
+          case "dropdown":
+            return (
+              <DropdownField
+                key={field.name}
+                label={field.label}
+                name={field.name}
+                value={value}
+                options={dropdownOptions[field.name] || []}
+                required={isRequired}
+                onSave={handleSave}
+              />
+            );
 
-            case "textarea":
-              return (
-                <TextAreaField
-                  key={field.name}
-                  label={field.label}
-                  name={field.name}
-                  value={value}
-                  required={isRequired}
-                  onSave={handleSave}
-                />
-              );
+          case "textarea":
+            return (
+              <TextAreaField
+                key={field.name}
+                label={field.label}
+                name={field.name}
+                value={value}
+                required={isRequired}
+                onSave={handleSave}
+              />
+            );
 
-            case "file":
-              return (
-                <FileUploadViewer
-                  key={field.name}
-                  label={field.label}
-                  name={field.name}
-                  fileUrl={value}
-                  onSave={handleSave}
-                />
-              );
+          case "file":
+            return (
+              <FileUploadViewer
+                key={field.name}
+                label={field.label}
+                name={field.name}
+                fileUrl={value}
+                onSave={handleSave}
+              />
+            );
 
-            default:
-              return null;
-          }
-        })}
-      </div>
+          default:
+            return null;
+        }
+      })}
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Settings;

@@ -1,30 +1,57 @@
 import React, { useState } from "react";
 
-const EditableField = ({ label, name, value, type = "text", required, onSave }) => {
-  const [editing, setEditing] = useState(false);
-  const [localValue, setLocalValue] = useState(value || "");
+const EditableField = ({ label, name, value, type, required, onSave }) => {
+  const [editMode, setEditMode] = useState(false);
+  const [tempValue, setTempValue] = useState(value || "");
+
+  const handleSave = () => {
+    onSave(name, tempValue);
+    setEditMode(false);
+  };
+
+  const handleDiscard = () => {
+    setTempValue(value || "");
+    setEditMode(false);
+  };
 
   return (
-    <div className="mb-4">
-      <label className="font-semibold block mb-1">{label}</label>
-      {editing ? (
+    <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
+      <label className="block text-gray-700 text-sm font-semibold mb-1">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {editMode ? (
         <>
           <input
             type={type}
-            value={localValue}
-            onChange={(e) => setLocalValue(e.target.value)}
-            required={required}
-            className="border p-2 rounded w-full"
+            value={tempValue}
+            onChange={(e) => setTempValue(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300"
           />
-          <div className="mt-2 flex gap-2">
-            <button className="bg-green-500 text-white px-3 py-1 rounded" onClick={() => { onSave(name, localValue); setEditing(false); }}>Save</button>
-            <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => { setLocalValue(value); setEditing(false); }}>Discard</button>
+          <div className="flex mt-3 space-x-2">
+            <button
+              className="bg-yellow-100 text-yellow-800 font-medium px-4 py-2 rounded-md shadow-sm hover:bg-yellow-200"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+            <button
+              className="bg-gray-100 text-gray-800 font-medium px-4 py-2 rounded-md shadow-sm hover:bg-gray-200"
+              onClick={handleDiscard}
+            >
+              Discard
+            </button>
           </div>
         </>
       ) : (
         <div className="flex justify-between items-center">
-          <span>{value || "Not set"}</span>
-          <button className="text-blue-500 underline" onClick={() => setEditing(true)}>Edit</button>
+          <span className="text-gray-900">{value || "—"}</span>
+          <button
+            className="text-sm bg-yellow-50 text-yellow-700 px-3 py-1 rounded hover:bg-yellow-100"
+            onClick={() => setEditMode(true)}
+          >
+            Edit
+          </button>
         </div>
       )}
     </div>

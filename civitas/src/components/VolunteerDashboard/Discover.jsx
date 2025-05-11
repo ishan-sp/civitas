@@ -31,7 +31,11 @@ const Discover = ({ ngos, setSelectedNGO }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredNgos.map((ngo, index) => (
-            <Card key={index} ngo={ngo} />
+            <Card
+              key={index}
+              ngo={ngo}
+              link={`/dashboard/vol/associate?ngo=${ngo.id}`} // Custom link to "associate"
+            />
           ))}
         </div>
       </section>
