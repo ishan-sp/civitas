@@ -20,7 +20,7 @@ const NGODash = () => {
       />
 
       <div className="flex-1 ml-64">
-        <TopNavbar />
+        <TopNavbar user_type={"NGO"}/>
         <main className="pt-20 px-6">
           <Routes>
             <Route path="/" element={<Navigate to="discover" replace />} />
