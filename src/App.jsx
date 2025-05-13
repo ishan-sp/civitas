@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 import NGODash from "./components/NGODashboard/NGODash";
 import VOLDash from "./components/VolunteerDashboard/VOLDash";
 import StudDash from "./components/StudentDashboard/StudDash";
+import SchoolManagement from "./components/VolunteerDashboard/SchoolManage/SchoolManagement";
 
 const App = () => {
   return (
@@ -22,6 +23,8 @@ const App = () => {
         <Route path="/dashboard/ngo/*" element={<NGODash />} />
         <Route path="/dashboard/vol/*" element={<VOLDash />} />
         <Route path="/dashboard/stud/*" element={<StudDash />} />
+        <Route path = "/school-management*" element = {<SchoolManagement />} />
+        
       </Routes>
     </Router>
   );
