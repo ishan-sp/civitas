@@ -62,11 +62,15 @@ const NGOManagement = () => {
       {/* Nested Routes */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Routes>
-          {/*<Route path="/" element={<Navigate to="discover-schools" replace />} />*/}
-          <Route path="discover-schools" element={<DiscoverSchools />} />
-          <Route path="school-applications" element={<SchoolApplications />} />
-          <Route path="my-schools" element={<MySchools />} />
-        </Routes>
+  {/* Redirect default /ngomanagement to /ngomanagement/discover-schools, preserving query params */}
+  <Route
+    index
+    element={<Navigate to={`discover-schools${location.search}`} replace />}
+  />
+  <Route path="discover-schools" element={<DiscoverSchools />} />
+  <Route path="school-applications" element={<SchoolApplications />} />
+  <Route path="my-schools" element={<MySchools />} />
+</Routes>
       </div>
     </div>
   );

@@ -14,8 +14,12 @@ const ApplySchool = () => {
 
       const idToken = await currentUser.getIdToken(true);
 
-      const res = await fetch("http://localhost:3000/get-volunteer-school-requests", {  // Correct URL
-        headers: { Authorization: `Bearer ${idToken}` },
+      const res = await fetch("http://localhost:3000/get-volunteer-school-requests", {
+        method:"POST",
+        headers: { 
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json"
+        },
       });
 
       const data = await res.json();
