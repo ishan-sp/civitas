@@ -428,6 +428,24 @@ async def getSchoolApplications (decoded_token: dict = Depends(verify_firebase_t
         })
     return {"result" : result}
 
+@app.post ("/get-volunteer-school-requests")
+async def getVolReq (decoded_token: dict = Depends(verify_firebase_token)):
+    ngoId = decoded_token["uid"]
+    ngo_doc = db.collection("NGO").document(ngoId).get().to_dict()
+    volunteerList = ngo_doc.get("Volunteers", [])
+    result = []
+    volunteer_refs = [db.collection("Volunteer").document(volId) for volId in volunteerList]
+    volunteer_docs = db.get_all(volunteer_refs)
+    volunteer_dicts = [vol.to_dict() for vol in volunteer_docs]
+    for dictionary in volunteer_dicts:
+        keys = list(dictionary.keys())
+        schoolNames = [dictionary[key]["schoolName"] for key in keys if key.startswith("Application") and dictionary[key]["status"] == "Pending"]
+        result.append ({
+            dictionary.get("fullName") : schoolNames
+        })
+    return {"result": result}
+
+
 
 @app.post("/api/volunteer")
 async def volunteer_filter(data: VolunteerFilter):
