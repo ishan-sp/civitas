@@ -428,23 +428,72 @@ async def getSchoolApplications (decoded_token: dict = Depends(verify_firebase_t
         })
     return {"result" : result}
 
-@app.post ("/get-volunteer-school-requests")
-async def getVolReq (decoded_token: dict = Depends(verify_firebase_token)):
-    ngoId = decoded_token["uid"]
-    ngo_doc = db.collection("NGO").document(ngoId).get().to_dict()
-    volunteerList = ngo_doc.get("Volunteers", [])
+@app.post("/get-volunteer-school-requests")
+async def getVolReq(decoded_token: dict = Depends(verify_firebase_token)):
+    ngo_id = decoded_token["uid"]
+    ngo_doc = db.collection("NGO").document(ngo_id).get().to_dict()
+    volunteer_list = ngo_doc.get("myVolunteers", [])
+    
     result = []
-    volunteer_refs = [db.collection("Volunteer").document(volId) for volId in volunteerList]
+
+    if not volunteer_list:
+        return {"result": []}
+
+    volunteer_refs = [db.collection("Volunteer").document(vol_id) for vol_id in volunteer_list]
     volunteer_docs = db.get_all(volunteer_refs)
-    volunteer_dicts = [vol.to_dict() for vol in volunteer_docs]
-    for dictionary in volunteer_dicts:
-        keys = list(dictionary.keys())
-        schoolNames = [dictionary[key]["schoolName"] for key in keys if key.startswith("Application") and dictionary[key]["status"] == "Pending"]
-        result.append ({
-            dictionary.get("fullName") : schoolNames
-        })
+
+    for doc in volunteer_docs:
+        data = doc.to_dict()
+        full_name = data.get("fullName", "Unknown")
+        
+        pending_schools = []
+        for key, value in data.items():
+            if key.startswith("Applications.") and isinstance(value, dict):
+                if value.get("status") == "Pending":
+                    pending_schools.append(value.get("schoolName"))
+
+        result.append({full_name: pending_schools})
+
     return {"result": result}
 
+
+@app.post("/accept-school-invitation")
+async def accept_school_invitation(request: Request):
+    data = await request.json()
+
+    # Validate input
+    vol_id = data.get("volId")
+    school_id = data.get("schoolId")
+
+    if not isinstance(vol_id, str):
+        return {"error": "Invalid volId. It must be a string."}
+    if not isinstance(school_id, str):
+        return {"error": "Invalid schoolId. It must be a string."}
+
+    # Get volunteer document
+    doc_ref = db.collection("Volunteer").document(vol_id)
+    doc_snapshot = doc_ref.get()
+    if not doc_snapshot.exists:
+        return {"error": "Volunteer not found."}
+
+    doc_data = doc_snapshot.to_dict()
+    applications = doc_data.get("Applications", {})
+
+    if school_id not in applications:
+        return {"error": f"No application found for schoolId: {school_id}"}
+
+    # Update the status to "Accepted"
+    doc_ref.set({
+        "Applications": {
+            school_id: {
+                "status": "Accepted"
+            }
+        }
+    }, merge=True)
+
+    return {"success": True, "message": f"Invitation for schoolId '{school_id}' accepted."}
+
+    
 
 
 @app.post("/api/volunteer")
