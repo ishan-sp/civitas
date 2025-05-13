@@ -49,7 +49,7 @@ const Volunteers = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Routes>
           <Route path="/" element={<Navigate to="applications" replace />} />
-          <Route path="applications" element={<Applications />} />
+          <Route path="applications/*" element={<Applications />} />
           <Route path="current-volunteers" element={<CurrentVolunteers />} />
         </Routes>
       </div>
