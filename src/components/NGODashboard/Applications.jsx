@@ -1,72 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
+import ApplyNGO from "./ApplyNGO";
+import ApplySchool from "./ApplySchool";
 
 const Applications = () => {
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchApplications = async () => {
-    setLoading(true);
-    try {
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
-      if (!currentUser) return;
-
-      const idToken = await currentUser.getIdToken(true);
-
-      const res = await fetch("http://localhost:3000/ngo/getPending", {
-        headers: { Authorization: `Bearer ${idToken}` },
-      });
-
-      const data = await res.json();
-      if (Array.isArray(data.result)) {
-        setApplications(data.result);
-      } else {
-        setApplications([]);
-      }
-    } catch (err) {
-      console.error("Error fetching applications:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchApplications();
-  }, []);
+  const location = useLocation();
+  const isSubTabActive = (subPath) =>
+    location.pathname === `/dashboard/ngo/volunteers/applications/${subPath}`;
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md overflow-y-auto max-h-[75vh]">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800">Pending Applications</h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : applications.length === 0 ? (
-        <p className="text-gray-600">No pending applications</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {applications.map((app) => (
-            <div
-              key={app.id}
-              className="border border-gray-200 rounded-lg p-6 shadow hover:shadow-lg transition"
-            >
-              <h3 className="text-xl font-semibold text-gray-800">
-                {app.fullName || "Unknown Volunteer"}
-              </h3>
-              <p className="text-gray-600">{app.email}</p>
-              <p className="text-gray-600 mt-2">
-                <strong>City:</strong> {app.city || "N/A"}
-              </p>
-              <Link
-                to={`/dashboard/ngo/volunteers/applicantdetails/${app.id}`}
-                className="mt-4 inline-block px-4 py-2 bg-black text-white rounded-lg text-center hover:bg-gray-800 transition"
-              >
-                View Full Details
-              </Link>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      {/* Sub-tab Navigation */}
+      <div className="flex justify-center space-x-8 mb-2">
+        <Link
+          to="/dashboard/ngo/volunteers/applications/applyngo"
+          className={`px-4 py-2 text-sm font-medium rounded-md  ${
+            isSubTabActive("applyngo")
+              ? "bg-black text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          NGO Applications
+        </Link>
+        <Link
+          to="/dashboard/ngo/volunteers/applications/applyschool"
+          className={`px-4 py-2 text-sm font-medium rounded-md  ${
+            isSubTabActive("applyschool")
+              ? "bg-black text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+        >
+          School Applications
+        </Link>
+      </div>
+
+      {/* Nested Sub-Routes */}
+      <Routes>
+        <Route index element={<Navigate to="applyngo" replace />} />
+        <Route path="applyngo" element={<ApplyNGO />} />
+        <Route path="applyschool" element={<ApplySchool />} />
+      </Routes>
     </div>
   );
 };
