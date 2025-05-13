@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import DiscoverSchools from "./NGOManageTabs/DiscoverSchools";
 import SchoolApplications from "./NGOManageTabs/SchoolApplications";
 import MySchools from "./NGOManageTabs/MySchools";
@@ -7,6 +8,8 @@ import MySchools from "./NGOManageTabs/MySchools";
 const NGOManagement = () => {
   const location = useLocation();
   const isActive = (path) => location.pathname.includes(path);
+  const [searchParams] = useSearchParams();
+  const ngoId = searchParams.get("ngo");
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen">
@@ -24,7 +27,7 @@ const NGOManagement = () => {
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto flex space-x-6 px-6 py-4">
           <Link
-            to="/dashboard/vol/ngomanagement/discover-schools"
+            to={`/dashboard/vol/ngomanagement/discover-schools?ngo=${ngoId}`}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
               isActive("discover-schools")
                 ? "bg-yellow-300 text-black shadow"
@@ -34,7 +37,7 @@ const NGOManagement = () => {
             Discover Schools
           </Link>
           <Link
-            to="/dashboard/vol/ngomanagement/school-applications"
+            to={`/dashboard/vol/ngomanagement/school-applications?ngo=${ngoId}`}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
               isActive("school-applications")
                 ? "bg-yellow-300 text-black shadow"
@@ -44,7 +47,7 @@ const NGOManagement = () => {
             School Applications
           </Link>
           <Link
-            to="/dashboard/vol/ngomanagement/my-schools"
+            to={`/dashboard/vol/ngomanagement/my-schools?ngo=${ngoId}`}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
               isActive("my-schools")
                 ? "bg-yellow-300 text-black shadow"
@@ -59,7 +62,7 @@ const NGOManagement = () => {
       {/* Nested Routes */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <Routes>
-          <Route path="/" element={<Navigate to="discover-schools" replace />} />
+          {/*<Route path="/" element={<Navigate to="discover-schools" replace />} />*/}
           <Route path="discover-schools" element={<DiscoverSchools />} />
           <Route path="school-applications" element={<SchoolApplications />} />
           <Route path="my-schools" element={<MySchools />} />

@@ -22,6 +22,7 @@ from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -36,8 +37,50 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./lively-oxide-453105-k9-3c99f8bc8007.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
 client = vision.ImageAnnotatorClient()
+
+def verify_firebase_token(request: Request):
+    auth_header = request.headers.get("Authorization")
+    print("Authorization Header:", auth_header)  # Debugging
+
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+
+    try:
+        # Extract the token from the Authorization header
+        id_token = auth_header.split("Bearer ")[1]
+
+        # Verify the token with a small allowance for clock skew
+        decoded_token = auth.verify_id_token(id_token, clock_skew_seconds=5)
+        print("Decoded Token:", decoded_token)  # Debugging
+
+        return decoded_token
+
+    except ValueError:
+        # Handle malformed Authorization header
+        raise HTTPException(status_code=401, detail="Malformed Authorization header")
+
+    except firebase_admin.auth.ExpiredIdTokenError:
+        # Handle expired tokens
+        raise HTTPException(status_code=401, detail="Expired token")
+
+    except firebase_admin.auth.InvalidIdTokenError:
+        # Handle invalid tokens
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    except firebase_admin.auth.RevokedIdTokenError:
+        # Handle revoked tokens
+        raise HTTPException(status_code=401, detail="Revoked token")
+
+    except firebase_admin.auth.CertificateFetchError:
+        # Handle issues fetching public key certificates
+        raise HTTPException(status_code=500, detail="Failed to fetch public key certificates")
+
+    except Exception as e:
+        # Catch any other exceptions
+        print("Token Verification Error:", e)  # Debugging
+        raise HTTPException(status_code=401, detail=f"Token verification error: {str(e)}")
 
 app = FastAPI()
 class LargeRequestMiddleware(BaseHTTPMiddleware):
@@ -78,17 +121,30 @@ class VolunteerFilter (BaseModel):
     subject : Optional[str] = None
     languages : Optional[str] = None
 
-@app.get ("/api/schools")
-def schools():
-    schools = [
-    { "schoolName" : "Govt Primary School Haralur", "location": "Harlur Road Ambalipura Village Bengaluru 560102", "schoolId": "2389732" },
-    { "schoolName" : "Govt High School Koramangala", "location": "Koramangala 6th Block, Bengaluru 560095", "schoolId": "2389733" },
-    { "schoolName" : "Govt Primary School Whitefield", "location": "Whitefield Main Road, Bengaluru 560066", "schoolId": "2389734" },
-    { "schoolName" : "Govt Senior Secondary School Jaipur", "location": "MI Road, Jaipur, Rajasthan 302001", "schoolId": "2389735" },
-    { "schoolName" : "Govt High School Ranchi", "location": "Main Road, Ranchi, Jharkhand 834001", "schoolId": "2389736" },
-    { "schoolName" : "Govt Primary School Andheri", "location": "Andheri West, Mumbai, Maharashtra 400058", "schoolId": "2389737" },
-  ]
-    return JSONResponse(content=schools)
+@app.post ("/get-schools")
+async def getschools(request : Request, decoded_token: dict = Depends(verify_firebase_token)):
+    ngoData = await request.json()
+    if "ngoId" not in ngoData or not isinstance(ngoData["ngoId"], str):
+        return {"error": "Invalid ngoId. It must be a string."}
+    volId = decoded_token["uid"]
+    vol_doc = db.collection("Volunteer").document(volId).get().to_dict()
+    applications = vol_doc.get("Applications", {})
+    school_ids = list(applications.keys())
+    ngo_doc = db.collection("NGO").document(ngoData["ngoId"]).get().to_dict()
+    result = []
+    req = [db.collection("Schools").document(id) for id in ngo_doc.get("schools") if not id in school_ids]
+    req_ref = db.get_all(req)
+    res = [user.to_dict() for user in req_ref]
+    for i in range (0, len (res)):
+        result.append({
+            'id': req[i].id,
+            'name': res[i].get('Name', 'Unnamed School'),
+            'location': res[i].get('Location', 'Unknown'),
+            'students': res[i].get('students', 0)
+        })
+    return {"result" : result}
+
+    
 
 
 @app.post ("/signup")
@@ -205,50 +261,8 @@ async def volunteer_filter (data: VolunteerFilter):
 
     return {"result" : docs}
 
-def verify_firebase_token(request: Request):
-    auth_header = request.headers.get("Authorization")
-    print("Authorization Header:", auth_header)  # Debugging
-
-    if not auth_header:
-        raise HTTPException(status_code=401, detail="Missing Authorization header")
-
-    try:
-        # Extract the token from the Authorization header
-        id_token = auth_header.split("Bearer ")[1]
-
-        # Verify the token with a small allowance for clock skew
-        decoded_token = auth.verify_id_token(id_token, clock_skew_seconds=5)
-        print("Decoded Token:", decoded_token)  # Debugging
-
-        return decoded_token
-
-    except ValueError:
-        # Handle malformed Authorization header
-        raise HTTPException(status_code=401, detail="Malformed Authorization header")
-
-    except firebase_admin.auth.ExpiredIdTokenError:
-        # Handle expired tokens
-        raise HTTPException(status_code=401, detail="Expired token")
-
-    except firebase_admin.auth.InvalidIdTokenError:
-        # Handle invalid tokens
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    except firebase_admin.auth.RevokedIdTokenError:
-        # Handle revoked tokens
-        raise HTTPException(status_code=401, detail="Revoked token")
-
-    except firebase_admin.auth.CertificateFetchError:
-        # Handle issues fetching public key certificates
-        raise HTTPException(status_code=500, detail="Failed to fetch public key certificates")
-
-    except Exception as e:
-        # Catch any other exceptions
-        print("Token Verification Error:", e)  # Debugging
-        raise HTTPException(status_code=401, detail=f"Token verification error: {str(e)}")
-
-@app.post ("/login")
-async def login(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
+@app.get ("/login")
+async def login(decoded_token: dict = Depends(verify_firebase_token)):
     uid = decoded_token["uid"]
     collection = ["Student", "Volunteer", "NGO"]
     doc_refs = [db.collection(item).document(uid) for item in collection]
@@ -313,6 +327,7 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
     with open(student_answer_file, "w") as f:
         f.write(combined_text.strip())
     teacher_txt = read_txt_as_block(answer_key_file)
+
     student_txt = read_txt_as_block(student_answer_file)
     results = grade_answers(teacher_txt, student_txt)
     if os.path.exists(answer_key_file):
@@ -352,6 +367,68 @@ async def joinNgo(request: Request, decoded_token: dict = Depends(verify_firebas
         })
 
     return {"message": "Membership request submitted successfully. Please check the MyNGOs tab for updates"}
+
+@app.post("/join-school")
+async def joinSchool(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
+    school_data = await request.json()
+    
+    if "schoolId" not in school_data or not isinstance(school_data["schoolId"], str):
+        return {"error": "Invalid schoolId. It must be a string."}
+
+    volunteer_id = decoded_token["uid"]
+    school_id = school_data["schoolId"]
+
+    school_ref = db.collection("Schools").document(school_id)
+    volunteer_ref = db.collection("Volunteer").document(volunteer_id)
+
+    school_doc = school_ref.get()
+    volunteer_doc = volunteer_ref.get()
+
+    school = school_doc.to_dict()
+    volunteer = volunteer_doc.to_dict()
+
+    if not school or not volunteer:
+        return {"error": "Invalid schoolId or volunteer not found"}
+
+    existing_applications = volunteer.get("Applications", {})
+    if school_id in existing_applications:
+        return {"message": "You have already applied to this school."}
+
+    if isinstance(school.get("PendingVol"), list):
+        school_ref.update({
+            "PendingVol": firestore.ArrayUnion([volunteer_id])
+        })
+    else:
+        school_ref.set({
+            "PendingVol": [volunteer_id]
+        }, merge=True)
+
+    volunteer_ref.set({
+        f"Applications.{school_id}": {
+            "schoolName": school.get("Name"),
+            "appliedOn": firestore.SERVER_TIMESTAMP,
+            "status": "Pending"
+        }
+    }, merge=True)
+
+    return {"message": "Membership request submitted successfully. Please check the MyNGOs tab for updates"}
+
+
+@app.post ("/get-school-applications")
+async def getSchoolApplications (decoded_token: dict = Depends(verify_firebase_token)):
+    vol_doc = db.collection("Volunteer").document(decoded_token["uid"]).get().to_dict()
+    result = []
+    applicationSet = [key for key in vol_doc.keys() if key.startswith("Applications")]
+    for application in applicationSet:
+        doc = vol_doc.get(application)
+        result.append ({
+            "schoolId" : application[13:],
+            "schoolName" : doc["schoolName"],
+            "appliedOn" : doc["appliedOn"],
+            "status" : doc["status"]
+        })
+    return {"result" : result}
+
 
 @app.post("/api/volunteer")
 async def volunteer_filter(data: VolunteerFilter):
@@ -398,36 +475,42 @@ async def getMyVolunteers(decoded_token: dict = Depends(verify_firebase_token)):
         return {"result": "No current volunteers"}
 
 
-@app.post ("/ngo/approveVolunteer")
+@app.post("/ngo/approveVolunteer")
 async def approveVolunteer(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
     volData = await request.json()
     if "volId" not in volData or not isinstance(volData["volId"], str):
         return {"error": "Invalid volId. It must be a string."}
+
     approvedVolId = volData["volId"]
     ngoId = decoded_token["uid"]
+
     approvedVol_ref = db.collection("Volunteer").document(approvedVolId)
     ngo_ref = db.collection("NGO").document(ngoId)
-    try:
+    approvedVol_doc = approvedVol_ref.get().to_dict()
+    if isinstance(approvedVol_doc.get("ngoMemberShip"), list) and isinstance(approvedVol_doc.get("Pending"), list) :
         approvedVol_ref.update({
             "ngoMemberShip": firestore.ArrayUnion([ngoId]),
-            "Pending" : firestore.ArrayRemove ([ngoId])
+            "Pending": firestore.ArrayRemove([ngoId])
         })
-    except Exception:
+    else:
         approvedVol_ref.set({
             "ngoMemberShip": [ngoId],
-            "Pending" : []
-        })
-    try:
+            "Pending": []
+        }, merge = True)
+    ngo_doc = ngo_ref.get().to_dict()
+    if isinstance(ngo_doc.get("myVolunteers"), list) and isinstance(ngo_doc.get("Pending"), list) :
         ngo_ref.update({
             "myVolunteers": firestore.ArrayUnion([approvedVolId]),
-            "Pending" : firestore.ArrayRemove ([approvedVolId])
+            "Pending": firestore.ArrayRemove([approvedVolId])
         })
-    except Exception:
+    else:
         ngo_ref.set({
             "myVolunteers": [approvedVolId],
-            "Pending" : []
-        })
-    return {"message":"Approved Volunteer Successfully"}
+            "Pending": []
+        }, merge = True)
+
+    return {"message": "Approved Volunteer Successfully"}
+
 
 @app.post ("/ngo/rejectVolunteer")
 async def rejectVolunteer(request: Request, decoded_token: dict = Depends(verify_firebase_token)):
@@ -526,6 +609,8 @@ async def getMyNgos (decoded_token : dict = Depends (verify_firebase_token)):
     myNgo_refs = [db.collection ("NGO").document(id) for id in volunteer_data]
     myNgos = db.get_all(myNgo_refs)
     result = [ngo.to_dict() for ngo in myNgos]
+    for i in range (0, len(result)):
+        result[i]['id'] = volunteer_data[i]
     return {"result" : result}
 
 def main():

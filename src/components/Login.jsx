@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import Students from "../assets/images/Students.png";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword,onAuthStateChanged,setPersistence,browserLocalPersistence, signOut} from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  signOut,
+} from "firebase/auth";
 import { auth } from "../firebase"; // Use useNavigate instead of useHistory
 
 export const Login = () => {
@@ -20,6 +26,28 @@ export const Login = () => {
         console.log("User is authenticated:", user); // Debugging
         try {
           const idToken = await user.getIdToken(true); // Force refresh the token
+          const response = await fetch("http://localhost:3000/login", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${idToken}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Login failed");
+          }
+
+          const data = await response.json();
+          console.log("Login success:", data);
+          if (data.type === "NGO") {
+            navigate("/dashboard/ngo");
+          } else if (data.type === "Student") {
+            navigate("/dashboard/stud");
+          } else if (data.type === "Volunteer") {
+            navigate("/dashboard/vol");
+          } else {
+            throw new Error("Unknown user type");
+          }
           console.log("ID Token:", idToken); // Debugging
         } catch (err) {
           console.error("Error fetching user data:", err);
@@ -40,49 +68,22 @@ export const Login = () => {
         formData.email,
         formData.password
       );
-  
+
       // Check if the user is authenticated
       const user = userCredential.user;
       if (!user) {
         throw new Error("User authentication failed.");
       }
-  
+
       console.log("User authenticated:", user); // Debugging
-  
+
       // Get the ID token
       const idToken = await user.getIdToken(true); // Force refresh
       if (!idToken) {
         throw new Error("Failed to retrieve ID token.");
       }
-  
+
       console.log("ID Token:", idToken); // Debugging
-  
-      // Send the token to the backend
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-  
-      const data = await response.json();
-      console.log("Login success:", data);
-  
-      // Redirect to the appropriate dashboard based on user type
-      if (data.type === "NGO") {
-        navigate("/dashboard/ngo");
-      } else if (data.type === "Student") {
-        navigate("/dashboard/stud");
-      } else if (data.type === "Volunteer") {
-        navigate("/dashboard/vol");
-      } else {
-        throw new Error("Unknown user type");
-      }
     } catch (err) {
       console.error("Login error:", err);
       alert("Login failed. Please check your credentials.");
