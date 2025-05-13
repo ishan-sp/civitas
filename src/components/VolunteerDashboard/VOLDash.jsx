@@ -66,12 +66,15 @@ const VOLDash = () => {
 
   // Set selected NGO based on query param
   useEffect(() => {
-    const id = searchParams.get("id");
-    if (id && ngos.length > 0) {
-      const found = ngos.find((ngo) => ngo.id?.toString() === id);
-      setSelectedNGO(found || null);
-    }
-  }, [searchParams, ngos]);
+  const id = searchParams.get("ngo");
+  console.log('Query param ID:', id); // Log the query param ID
+  if (id && ngos.length > 0) {
+    const found = ngos.find((ngo) => ngo.id?.toString() === id);
+    console.log('Selected NGO:', found); // Log the found NGO
+    setSelectedNGO(found || null);
+  }
+}, [searchParams, ngos]);
+
 
   return (
     <div className="flex bg-[#F7F9FC] min-h-screen">
