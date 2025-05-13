@@ -37,8 +37,7 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "civitas/backend/lively-oxide-453105-k9-3c99f8bc8007.json"
-client = vision.ImageAnnotatorClient()
+
 
 def verify_firebase_token(request: Request):
     auth_header = request.headers.get("Authorization")
