@@ -1,34 +1,28 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
-import { FaHome, FaBell, FaCog, FaUserCircle } from "react-icons/fa";
 
-function TopNavbar() {
+const TopNavbar = ({ user_type, collapsed }) => {
+  const leftOffset = collapsed ? "5rem" : "16rem"; // Matches sidebar width
+
   return (
-    <div className="fixed top-0 left-0 w-full bg-white shadow-md z-30">
-      <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-        {/* Left section: Logo */}
-        <RouterLink
-          to="/"
-          className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-800"
-        >
-          Civitas
-        </RouterLink>
-
-        {/* Right section: Icons and user info */}
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-4">
-            <FaHome className="text-xl text-gray-800 hover:text-black cursor-pointer" />
-            <FaBell className="text-xl text-gray-800 hover:text-black cursor-pointer" />
-            <FaCog className="text-xl text-gray-800 hover:text-black cursor-pointer" />
-          </div>
-          <div className="flex items-center space-x-2">
-            <FaUserCircle className="text-2xl text-gray-800 hover:text-black cursor-pointer" />
-            <span className="text-sm text-gray-800">User</span>
-          </div>
-        </div>
+    <header
+      className="fixed top-0 right-0 h-16 bg-white shadow-md flex items-center justify-between px-6 z-10 transition-all duration-300 ease-in-out"
+      style={{
+        left: leftOffset,
+      }}
+    >
+      <div className="flex items-center gap-4 transition-all duration-300 ease-in-out">
+        {/* Add some margin or padding here if you want spacing */}
+        <h1 className="text-xl font-semibold text-gray-800">
+          {user_type} Dashboard
+        </h1>
       </div>
-    </div>
+      <div className="flex gap-4 items-center">
+        <button className="px-4 py-2 bg-yellow-300 text-black rounded-lg hover:bg-yellow-400 transition">
+          Profile
+        </button>
+      </div>
+    </header>
   );
-}
+};
 
 export default TopNavbar;
