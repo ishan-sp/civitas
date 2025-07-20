@@ -1,5 +1,92 @@
-Q1 (10 marks):
-Biohazards include bacteria, viruses, fungi, and biological toxins that can harm humans. They can spread infections like TB, HIV, or COVID-19. Exposure to biohazards may happen in labs, hospitals, or agriculture. They pose risks like disease outbreaks and long-term health damage. Proper handling, use of PPE, and strict biosafety protocols are essential to minimize these risks and protect public health.
+ 1 a) 6
+ 2 a) 2,3
+ 3 b) sqrt(3)/2
+ 4 c) 5
+ 5 c)154 cm2
+ 6 b) 5
+ 7 b) 1/2
+ 8 b) 180◦
+ 9 b) 2
+ 10 b) 64
 
-Q2 (10 marks):
-Biosafety Level II Class B2 cabinets are used to handle moderate-risk pathogens. These cabinets provide protection to personnel, the environment, and the product. Air is drawn through HEPA filters, and 100% of it is exhausted outside to avoid contamination. A neat diagram should show the airflow direction, HEPA filter location, and exhaust system. These cabinets are common in clinical labs and diagnostic centers.
+ 11 Solve 3x −7 = 2x+5  (2 Marks)
+    Steps:
+    • 3x−2x=5+7 (1 Mark)
+    • x=12      (1 Mark)
+ 12. Find roots of x^2 − 4x + 4 = 0  (3 Marks)
+     Steps:
+    • Discriminant: D = (−4)2 −4(1)(4) = 0   (1 Mark)
+    • Roots: x = (4±sqrt(0))/2                    (1 Mark)
+    • Answer: Double root at x = 2           (1 Mark)
+ 
+
+13. Sum of twonumbers is 15, difference is 3.Find the numbers. (5Marks)
+ Steps:
+ •Let the numbers be x and y
+ •x+y=15 (1Mark)
+ •x−y=3 (1Mark)
+ •Addequations: 2x=18⇒x=9 (1Mark)
+ •Substitute: y=6 (1Mark)
+ •Answer:Numbers are 9 and 6 (1Mark)
+
+ Section2:Geometry(10Marks)
+
+ 14.Prove angles opposite equal sides of a triangle are equal. (4Marks)
+ Proof:
+ •Draw △ABC with AB=AC
+ •Construct anglebisector of∠Ameeting BC at D. (1Mark)
+ •△ABD  ∼ =△ACD(SAS) (1Mark)
+ •Thus,∠B=∠C (2Marks)
+
+ 15. In right △ABC , AB=6cm, BC=8cm.FindAC. (3Marks)
+ Steps:
+ •ByPythagoras:AC=sqrt(AB^2+BC^2) (1Mark)
+ •AC=sqrt(6^2+8^2)=sqrt(100)=10cm (2Marks)
+
+ 16.Area of equilateral triangle (side=6cm). (3Marks)
+ Steps:
+ •Areaformula:
+ sqrt(3)/4 × side^2 (1Mark)
+ =  sqrt(3)/4 × 36 = 9sqrt(3) cm^2 (2Marks)
+ Section3:Trigonometry(8Marks)
+
+ 17.Prove
+ sin^2θ+cos^2θ=1 (4Marks)
+ Proof:
+ •Consider right △ABC with hypotenuse AC
+ • sinθ = AB/AC, cosθ = BC/AC (1Mark)
+ • sin^2θ+cos^2θ = (AB^2+BC^2)/AC^2 (1Mark)
+ • By Pythagoras: AB^2 +BC^2 = AC^2 (1 Mark)
+ • Thus, AC^2/AC^2 = 1
+
+ 18. If tanθ = 3/4 , find sinθ and cosθ.
+ Steps:
+ • Let opposite = 3, adjacent = 4, hypotenuse = 5 (Pythagoras)     (1 Mark)
+ • sinθ = 3/5       (1.5 marks)
+ • cosθ = 4/5       (1.5 marks)
+
+ Section 4: Mensuration (7 Marks)
+
+ 19. Volume of cylinder (r = 7 cm,h = 10 cm).
+ Steps:
+ • Volume = πr2h
+ • = 22
+ 7 × 49× 10 =1540 cm3
+
+ 20. Area of circle (radius = 14 cm).
+ Steps:
+ • Area = πr2
+ • = 22
+ 7 × 14× 14 =616 cm2
+ Section 5: Statistics & Probability (5 Marks)
+
+ 21. Mean of 5,8,10,12,15.   (2 Marks)
+ Steps:
+ • Sum =50, count = 5    (1 Mark)
+ • Mean = 50 /5 = 10    (1 Mark)
+
+ 22. Probability of drawing red ball (5 red, 3 blue).   (3 Marks)
+ Steps:
+ • Total balls = 8  (1 Mark)
+ • Probability = 5/8 (2 marks)
+ 

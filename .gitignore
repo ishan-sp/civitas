@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 backend/firebase_credentials.json
 backend/.env
+backend/api/*.json
+*.json

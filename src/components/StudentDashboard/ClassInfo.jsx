@@ -2,8 +2,7 @@ import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import qp1 from "../../assignments/qp1.pdf";
-import anskey1 from "../../assignments/anskey1.txt";
-import penguin from "../../assets/images/penguin.png"; // Ensure correct image path
+import penguin from "../../assets/images/penguin.png";
 
 const assignments = [
   {
@@ -25,68 +24,101 @@ const assignments = [
 
 export default function ClassInfo() {
   const [expanded, setExpanded] = useState(null);
-  const [uploads, setUploads] = useState({});
+  const [answerKeyFile, setAnswerKeyFile] = useState(null);
+  const [studentFiles, setStudentFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState({});
-  const [popupVisible, setPopupVisible] = useState(false); // Track popup visibility
+  const [results, setResults] = useState(null);
+  const [popupVisible, setPopupVisible] = useState(false);
 
   const toggleExpand = (index) => {
     setExpanded(expanded === index ? null : index);
+    setAnswerKeyFile(null);
+    setStudentFiles([]);
+    setResults(null);
+    setPopupVisible(false);
   };
 
-  const handleImageChange = (e, index) => {
+  const handleAnswerKeyChange = (e) => {
+    if (e.target.files.length > 0) {
+      setAnswerKeyFile(e.target.files[0]);
+    }
+  };
+
+  const handleStudentFilesChange = (e) => {
     const files = Array.from(e.target.files).filter((file) =>
       file.type.startsWith("image/")
     );
     if (files.length === 0) return;
-
-    const updatedFiles = [...(uploads[index] || []), ...files];
-    setUploads({ ...uploads, [index]: updatedFiles });
+    setStudentFiles(files);
   };
 
-  const removeImage = (index, imgIndex) => {
-    const newFiles = uploads[index].filter((_, i) => i !== imgIndex);
-    setUploads({ ...uploads, [index]: newFiles });
-  };
-
-  const handleUpload = async (index) => {
-    const images = uploads[index] || [];
-
-    if (images.length === 0) {
-      alert("Please select image files before uploading.");
-      return;
+  const uploadAnswerKey = async () => {
+    if (!answerKeyFile) {
+      alert("Please select an answer key file before uploading.");
+      return false;
     }
 
-    setLoading(true);
+    const formData = new FormData();
+    formData.append("file", answerKeyFile);
 
     try {
-      const formData = new FormData();
-
-      // Add anskey1 as first file
-      const anskeyBlob = await fetch(anskey1).then((res) => res.blob());
-      const anskeyFile = new File([anskeyBlob], "anskey1.txt", { type: "text/plain" });
-      formData.append("files", anskeyFile);
-      // Append uploaded images
-      images.forEach((file) => {
-        formData.append("files", file);
-      });
-
-      const response = await fetch("http://localhost:3000/extract-text", {
+      setLoading(true);
+      const res = await fetch("http://localhost:8000/upload-answer-key", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Scoring failed");
+      if (!res.ok) throw new Error("Failed to upload answer key");
 
-      const result = await response.json();
-      setResults((prev) => ({ ...prev, [index]: result }));
-      setPopupVisible(true); // Show the popup after getting the results
+      const json = await res.json();
+      console.log("Upload answer key response:", json);
+
+      if (json.status !== "Answer key context stored") {
+        throw new Error("Unexpected response from server");
+      }
+
+      return true;
     } catch (err) {
-      console.error("Upload error:", err);
-      alert("Upload or scoring failed. Please try again.");
+      alert("Answer key upload failed: " + err.message);
+      return false;
     } finally {
       setLoading(false);
     }
+  };
+
+  const uploadStudentAnswers = async () => {
+    if (studentFiles.length === 0) {
+      alert("Please select at least one student answer image to upload.");
+      return;
+    }
+
+    const answerKeyUploaded = await uploadAnswerKey();
+    if (!answerKeyUploaded) return;
+
+    const formData = new FormData();
+    studentFiles.forEach((file) => formData.append("files", file));
+
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:8000/evaluate-student", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Evaluation failed");
+
+      const json = await res.json();
+      setResults(json); // ← Store raw response
+      setPopupVisible(true);
+    } catch (err) {
+      alert("Evaluation error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeStudentFile = (index) => {
+    setStudentFiles((files) => files.filter((_, i) => i !== index));
   };
 
   const closePopup = () => {
@@ -95,7 +127,6 @@ export default function ClassInfo() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      {/* Big Penguin Image */}
       <div className="mb-8 text-center">
         <img
           src={penguin}
@@ -151,18 +182,28 @@ export default function ClassInfo() {
 
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
+                    Upload Answer Key (PDF or Image)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,image/*"
+                    onChange={handleAnswerKeyChange}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                  />
+
+                  <label className="block mt-4 text-sm font-medium text-gray-700">
                     Upload Your Answer (Images Only)
                   </label>
                   <input
                     type="file"
                     multiple
                     accept="image/*"
-                    onChange={(e) => handleImageChange(e, index)}
+                    onChange={handleStudentFilesChange}
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
 
                   <div className="flex gap-3 flex-wrap mt-2">
-                    {(uploads[index] || []).map((file, imgIndex) => (
+                    {studentFiles.map((file, imgIndex) => (
                       <div key={imgIndex} className="relative">
                         <img
                           src={URL.createObjectURL(file)}
@@ -170,7 +211,7 @@ export default function ClassInfo() {
                           className="w-20 h-20 object-cover rounded-lg border"
                         />
                         <button
-                          onClick={() => removeImage(index, imgIndex)}
+                          onClick={() => removeStudentFile(imgIndex)}
                           className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
                           title="Remove"
                         >
@@ -181,11 +222,11 @@ export default function ClassInfo() {
                   </div>
 
                   <button
-                    className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
-                    onClick={() => handleUpload(index)}
+                    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
+                    onClick={uploadStudentAnswers}
                     disabled={loading}
                   >
-                    {loading ? "Uploading..." : "Upload Answer"}
+                    {loading ? "Uploading..." : "Upload & Evaluate"}
                   </button>
                 </div>
               </div>
@@ -194,67 +235,31 @@ export default function ClassInfo() {
         ))}
       </div>
 
-      {/* Popup for result */}
-      {popupVisible && results && Object.keys(results).length > 0 && (
+      {/* Grading Report Popup */}
+      {popupVisible && results && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+          <div className="bg-white p-6 rounded-lg w-[95%] max-w-2xl shadow-lg relative">
             <button
               className="absolute top-2 right-2 text-red-500"
               onClick={closePopup}
+              aria-label="Close grading report"
             >
               <IoClose size={20} />
             </button>
-            <h3 className="text-xl font-semibold mb-4">Grading Report</h3>
+            <h3 className="text-xl font-semibold mb-4 text-center">Grading Report</h3>
 
-            <div className="space-y-4">
-              {Object.entries(results).map(([assignmentIndex, result]) => (
-                <div key={assignmentIndex}>
-                  <h4 className="font-medium text-gray-700 mb-2">
-                    Assignment {parseInt(assignmentIndex) + 1}
-                  </h4>
-                  <div className="space-y-2">
-                    {result.grading_results &&
-                      Object.entries(result.grading_results).map(
-                        ([question, grading]) => (
-                          <div key={question} className="bg-gray-50 p-3 rounded-md">
-                            <h5 className="font-semibold text-gray-800">
-                              Question {question}
-                            </h5>
-                            <p className="text-sm text-gray-600">
-                              Marks Awarded: {grading.marks_awarded} /{" "}
-                              {grading.total_marks}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              Reasoning: {grading.reasoning}
-                            </p>
-                          </div>
-                        )
-                      )}
-                    <div className="mt-4">
-                      <h5 className="font-semibold text-gray-800">Summary</h5>
-                      <p className="text-sm text-gray-600">
-                        Total Marks Awarded: {result.summary.total_marks_awarded} /{" "}
-                        {result.summary.total_marks_possible}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Percentage: {result.summary.percentage_score}%
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center font-semibold text-green-700 mb-4">
+              Total Score: {results.total_score}
             </div>
 
-            <div className="mt-4 text-center">
-              {results && results.summary && results.summary.percentage_score >= 50 ? (
-                <span role="img" aria-label="celebration">
-                  🎉🎉🎉
-                </span>
-              ) : (
-                <span role="img" aria-label="sad">
-                  😞😞😞
-                </span>
-              )}
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+              {results.detailed_feedback.map((item, idx) => (
+                <div key={idx} className="border rounded p-3 bg-gray-50">
+                  <h4 className="font-semibold mb-1">Question {item.question}</h4>
+                  <p><strong>Marks Awarded:</strong> {item.marks}</p>
+                  <p><strong>Feedback:</strong> {item.feedback}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
