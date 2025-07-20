@@ -19,6 +19,4 @@ python-jose==3.3.0
 uuid==1.30
 
 # Production Server
-gunicorn==21.2.0
-tokenizers>=0.13.0 
-transformers>=4.30.0 
+uvicorn
