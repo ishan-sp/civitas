@@ -1,0 +1,21 @@
+# Core Requirements
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+
+# Image Processing
+pdf2image
+pillow  # PIL
+
+# Google Cloud Services
+google-cloud-vision
+google-generativeai
+google-auth
+
+# Additional Utilities
+pypdf2 # For PDF processing if needed
+numpy # Often required by image processing libraries
+
+# Production Server (if using Gunicorn)
+gunicorn
