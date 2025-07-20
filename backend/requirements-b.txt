@@ -24,4 +24,4 @@ google-cloud-storage==2.16.0
 python-jose==3.3.0
 uuid==1.30
 
---use-deprecated=legacy-resolver
+
