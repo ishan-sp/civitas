@@ -1,6 +1,6 @@
  1 a) 6
  2 a) 2,3
- 3 b) sqrt(3)/2
+ 3 b) √3/2
  4 c) 5
  5 c)154 cm2
  6 b) 5
@@ -16,7 +16,7 @@
  12. Find roots of x^2 − 4x + 4 = 0  (3 Marks)
      Steps:
     • Discriminant: D = (−4)2 −4(1)(4) = 0   (1 Mark)
-    • Roots: x = (4±sqrt(0))/2                    (1 Mark)
+    • Roots: x = (4±√0)/2                    (1 Mark)
     • Answer: Double root at x = 2           (1 Mark)
  
 
@@ -40,14 +40,14 @@
 
  15. In right △ABC , AB=6cm, BC=8cm.FindAC. (3Marks)
  Steps:
- •ByPythagoras:AC=sqrt(AB^2+BC^2) (1Mark)
- •AC=sqrt(6^2+8^2)=sqrt(100)=10cm (2Marks)
+ •ByPythagoras:AC=√(AB^2+BC^2) (1Mark)
+ •AC=√(6^2+8^2)=√100=10cm (2Marks)
 
  16.Area of equilateral triangle (side=6cm). (3Marks)
  Steps:
  •Areaformula:
- sqrt(3)/4 × side^2 (1Mark)
- =  sqrt(3)/4 × 36 = 9sqrt(3) cm^2 (2Marks)
+ √3/4 × side^2 (1Mark)
+ =  √3/4 × 36 = 9√3 cm^2 (2Marks)
  Section3:Trigonometry(8Marks)
 
  17.Prove

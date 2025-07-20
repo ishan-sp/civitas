@@ -37,7 +37,8 @@ firebase_admin.initialize_app(cred, {
 })
 
 
-
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+client = vision.ImageAnnotatorClient()
 
 def verify_firebase_token(request: Request):
     auth_header = request.headers.get("Authorization")
@@ -293,22 +294,26 @@ async def getProfile(decoded_token: dict = Depends(verify_firebase_token)):
 
 @app.post("/extract-text")
 async def extract_text_from_images(files: List[UploadFile] = File(...)):
-    answer_key = files[0]
+    if not files or len(files) < 2:
+        return {"error": "Upload at least an answer key and one student answer image."}
+
     answer_key_file = f"temp_{uuid.uuid4()}.txt"
-    with open(answer_key_file, "wb") as buffer:
-        shutil.copyfileobj(answer_key.file, buffer)
-    remaining_files = files[1:]
-    combined_text = ""
+    student_answer_file = f"temp_{uuid.uuid4()}.txt"
+    temp_files = []
 
-    for file in remaining_files:
-        temp_filename = f"temp_{uuid.uuid4()}.jpg"
+    try:
+        # Save the answer key
+        with open(answer_key_file, "wb") as buffer:
+            shutil.copyfileobj(files[0].file, buffer)
 
-        try:
-            # Save the uploaded file temporarily
+        combined_text = ""
+        for file in files[1:]:
+            temp_filename = f"temp_{uuid.uuid4()}.jpg"
+            temp_files.append(temp_filename)
+
             with open(temp_filename, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
 
-            # Read and send image to Google Vision
             with open(temp_filename, "rb") as image_file:
                 content = image_file.read()
 
@@ -318,21 +323,23 @@ async def extract_text_from_images(files: List[UploadFile] = File(...)):
 
             if texts:
                 combined_text += texts[0].description + "\n"
-        finally:
-            # Clean up temp file
-            if os.path.exists(temp_filename):
-                os.remove(temp_filename)
-    student_answer_file = f"temp_{uuid.uuid4()}.txt"
-    with open(student_answer_file, "w") as f:
-        f.write(combined_text.strip())
-    teacher_txt = read_txt_as_block(answer_key_file)
 
-    student_txt = read_txt_as_block(student_answer_file)
-    results = grade_answers(teacher_txt, student_txt)
-    if os.path.exists(answer_key_file):
-        os.remove(answer_key_file)
-    if os.path.exists(student_answer_file):
-        os.remove(student_answer_file)
+        # Write student answers with UTF-8 encoding and ignore errors
+        with open(student_answer_file, "w", encoding="utf-8", errors="ignore") as f:
+            f.write(combined_text.strip())
+
+        # Read both files with UTF-8 and ignore errors
+        teacher_txt = read_txt_as_block(answer_key_file)
+        student_txt = read_txt_as_block(student_answer_file, encoding="utf-8", errors="ignore")
+
+        results = grade_answers(teacher_txt, student_txt)
+
+    finally:
+        # Cleanup
+        for temp in [answer_key_file, student_answer_file] + temp_files:
+            if os.path.exists(temp):
+                os.remove(temp)
+
     return results
 
 @app.post("/join-ngo")
