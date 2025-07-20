@@ -1,21 +1,25 @@
-# Core Requirements
-fastapi
-uvicorn
-python-multipart
-python-dotenv
+# Core Framework
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+python-dotenv==1.0.1
 
-# Image Processing
-pdf2image
-pillow  # PIL
+# Image and PDF Processing
+pdf2image==1.17.0
+Pillow==10.3.0
+pypdf2==3.0.1
+numpy==1.26.4
 
 # Google Cloud Services
-google-cloud-vision
-google-generativeai
-google-auth
+google-cloud-vision==3.7.2
+google-auth==2.29.0
+google-generativeai==0.5.1
 
-# Additional Utilities
-pypdf2 # For PDF processing if needed
-numpy # Often required by image processing libraries
+# Firebase (optional, if needed)
+firebase-admin==6.5.0
+google-cloud-firestore==2.14.0
+google-cloud-storage==2.16.0
 
-# Production Server (if using Gunicorn)
-gunicorn
+# Auth & Utility
+python-jose==3.3.0
+uuid==1.30
