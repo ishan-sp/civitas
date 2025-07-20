@@ -21,3 +21,4 @@ uuid
 # Production Server
 uvicorn
 openai
+tenacity
