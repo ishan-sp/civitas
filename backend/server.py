@@ -688,7 +688,8 @@ async def getMyNgos (decoded_token : dict = Depends (verify_firebase_token)):
 
 def main():
     import uvicorn
-    uvicorn.run (app, host="localhost", port=3000)
+    port = int(os.environ.get("PORT", 3000))  # Render provides $PORT
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     main()
