@@ -22,8 +22,4 @@
     uvicorn
     openai
     tenacity
-    pillow==10.2.0
-    pdf2image==1.17.0
-    google-generativeai==0.3.2
-    google-auth==2.27.0
-    numpy
+    
