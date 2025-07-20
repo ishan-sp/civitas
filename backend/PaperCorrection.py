@@ -145,7 +145,6 @@ async def evaluate_student_script(files: List[UploadFile] = File(...)):
         return JSONResponse(status_code=500, content={"error": str(e)})
     
 def main():
-    import uvicorn
     port = int(os.environ.get("PORT", 8000))  # Render provides $PORT
     uvicorn.run(app, host="0.0.0.0", port=port)
 
