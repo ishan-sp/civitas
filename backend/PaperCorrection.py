@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-
+import uvicorn
 load_dotenv()
 
 app = FastAPI()
@@ -143,3 +143,11 @@ async def evaluate_student_script(files: List[UploadFile] = File(...)):
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
+    
+def main():
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))  # Render provides $PORT
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
+if __name__ == "__main__":
+    main()
