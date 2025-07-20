@@ -15,7 +15,7 @@ const CurrentVolunteers = () => {
       if (!currentUser) return;
 
       const idToken = await currentUser.getIdToken(true);
-      const res = await fetch("http://localhost:3000/ngo/my-volunteers", {
+      const res = await fetch("https://civitas-rc0z.onrender.com/ngo/my-volunteers", {
         headers: { Authorization: `Bearer ${idToken}` },
       });
 

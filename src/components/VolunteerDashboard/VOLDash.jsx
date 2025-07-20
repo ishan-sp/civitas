@@ -22,7 +22,7 @@ const VOLDash = () => {
 
     const fetchNGOs = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/ngos");
+        const res = await fetch("https://civitas-rc0z.onrender.com/api/ngos");
         const data = await res.json();
         if (isMounted) setNgos(data.result || []);
       } catch (err) {
@@ -46,7 +46,7 @@ const VOLDash = () => {
         if (user) {
           try {
             const token = await user.getIdToken(true);
-            const res = await fetch("http://localhost:3000/my-ngos", {
+            const res = await fetch("https://civitas-rc0z.onrender.com/my-ngos", {
               headers: { Authorization: `Bearer ${token}` },
             });
 

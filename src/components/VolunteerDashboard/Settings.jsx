@@ -81,7 +81,7 @@ const Settings = ({ user }) => {
          setIsLoading(true);
          setHasError(false);
          const idToken = await user.getIdToken();
-         const response = await fetch("http://localhost:3000/user-profile", {
+         const response = await fetch("https://civitas-rc0z.onrender.com/user-profile", {
            method: "GET",
            headers: {
              "Content-Type": "application/json",

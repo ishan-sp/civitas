@@ -16,7 +16,7 @@ function CollapseNavbar({ links = [], collapsed, setCollapsed }) {
         const idToken = await user.getIdToken();
 
         try {
-          const response = await fetch("http://localhost:3000/logout", {
+          const response = await fetch("https://civitas-rc0z.onrender.com/logout", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${idToken}`,

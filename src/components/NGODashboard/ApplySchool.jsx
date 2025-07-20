@@ -14,7 +14,7 @@ const ApplySchool = () => {
 
       const idToken = await currentUser.getIdToken(true);
 
-      const res = await fetch("http://localhost:3000/get-volunteer-school-requests", {
+      const res = await fetch("https://civitas-rc0z.onrender.com/get-volunteer-school-requests", {
         method:"POST",
         headers: { 
           Authorization: `Bearer ${idToken}`,

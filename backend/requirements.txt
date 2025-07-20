@@ -22,3 +22,9 @@ uuid
 uvicorn
 openai
 tenacity
+pdf2image
+pillow
+google-generativeai
+google-auth
+pypdf2
+numpy

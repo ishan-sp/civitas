@@ -11,7 +11,7 @@ const ApplicantDetails = () => {
   const fetchDetails = async () => {
     try {
       const token = await getAuth().currentUser.getIdToken(true);
-      const res = await fetch("http://localhost:3000/api/volunteer", {
+      const res = await fetch("https://civitas-rc0z.onrender.com/api/volunteer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
