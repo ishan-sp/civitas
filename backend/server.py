@@ -26,7 +26,7 @@ from datetime import datetime
 
 load_dotenv()
 
-firebase_credentials = os.environ["FIREBASE_CREDENTIALS"]
+firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
 
 if not firebase_credentials:
     raise ValueError("FIREBASE_CREDENTIALS environment variable is missing!")
