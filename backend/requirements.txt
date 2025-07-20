@@ -20,5 +20,5 @@ uuid==1.30
 
 # Production Server
 gunicorn==21.2.0
-tokenizers>=0.13.0 --no-build-isolation
-transformers>=4.30.0 --no-build-isolation
+tokenizers>=0.13.0 
+transformers>=4.30.0 
