@@ -22,4 +22,5 @@
     uvicorn
     openai
     tenacity
+    gunicorn
     
