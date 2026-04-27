@@ -59,7 +59,7 @@ const NGOAssociate = ({ ngo }) => {
       const idToken = await currentUser.getIdToken(true); // Force refresh
 
       // Send the token to the backend
-      const response = await fetch("https://civitas-rc0z.onrender.com/join-ngo", {
+      const response = await fetch("https://civitas-pscu.onrender.com/join-ngo", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

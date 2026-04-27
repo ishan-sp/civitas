@@ -15,7 +15,7 @@ function VerticalNavbar({ links = [] }) {
         const idToken = await user.getIdToken();
   
         try {
-          const response = await fetch("https://civitas-rc0z.onrender.com/logout", {
+          const response = await fetch("https://civitas-pscu.onrender.com/logout", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${idToken}`,

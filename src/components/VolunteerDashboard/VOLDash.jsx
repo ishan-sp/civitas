@@ -5,7 +5,7 @@ import TopNavbar from "../NGODashboard/TopNavbar";
 import Discover from "./Discover";
 import Settings from "./Settings";
 import NGOAssociate from "./NGOAssociate";
-import MyNGOs from "./MyNGOs";
+import MyNGOs from "./MyNgos";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import NGOManagement from "./NGOManagement";
 
@@ -22,7 +22,7 @@ const VOLDash = () => {
 
     const fetchNGOs = async () => {
       try {
-        const res = await fetch("https://civitas-rc0z.onrender.com/api/ngos");
+        const res = await fetch("https://civitas-pscu.onrender.com/api/ngos");
         const data = await res.json();
         if (isMounted) setNgos(data.result || []);
       } catch (err) {
@@ -46,7 +46,7 @@ const VOLDash = () => {
         if (user) {
           try {
             const token = await user.getIdToken(true);
-            const res = await fetch("https://civitas-rc0z.onrender.com/my-ngos", {
+            const res = await fetch("https://civitas-pscu.onrender.com/my-ngos", {
               headers: { Authorization: `Bearer ${token}` },
             });
 

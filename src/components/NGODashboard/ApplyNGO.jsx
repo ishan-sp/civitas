@@ -16,7 +16,7 @@ const ApplyNGO = () => {
 
       const idToken = await currentUser.getIdToken(true);
 
-      const res = await fetch("https://civitas-rc0z.onrender.com/ngo/getPending", {
+      const res = await fetch("https://civitas-pscu.onrender.com/ngo/getPending", {
         headers: { Authorization: `Bearer ${idToken}` },
       });
 
