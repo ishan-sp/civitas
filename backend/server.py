@@ -8,6 +8,7 @@ from main import read_txt_as_block, grade_answers
 from typing import Optional
 from firebase_admin import auth, credentials, firestore, storage
 import uuid
+from google.oauth2 import service_account
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -36,9 +37,26 @@ firebase_admin.initialize_app(cred, {
     "storageBucket": "civitas-dd1d6.firebasestorage.app" 
 })
 
+vision_credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+vision_credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-client = vision.ImageAnnotatorClient()
+if vision_credentials_json:
+    vision_credentials = service_account.Credentials.from_service_account_info(json.loads(vision_credentials_json))
+    client = vision.ImageAnnotatorClient(credentials=vision_credentials)
+    print("Successfully loaded Vision credentials from GOOGLE_APPLICATION_CREDENTIALS_JSON.")
+elif vision_credentials_path and os.path.isfile(vision_credentials_path):
+    vision_credentials = service_account.Credentials.from_service_account_file(vision_credentials_path)
+    client = vision.ImageAnnotatorClient(credentials=vision_credentials)
+    print("Successfully loaded Vision credentials from GOOGLE_APPLICATION_CREDENTIALS file path.")
+elif firebase_credentials:
+    vision_credentials = service_account.Credentials.from_service_account_info(json.loads(firebase_credentials))
+    client = vision.ImageAnnotatorClient(credentials=vision_credentials)
+    print("Successfully loaded Vision credentials from FIREBASE_CREDENTIALS.")
+else:
+    raise ValueError(
+        "No Vision credentials found. Set GOOGLE_APPLICATION_CREDENTIALS_JSON, "
+        "GOOGLE_APPLICATION_CREDENTIALS to a valid file path, or FIREBASE_CREDENTIALS."
+    )
 
 def verify_firebase_token(request: Request):
     auth_header = request.headers.get("Authorization")
